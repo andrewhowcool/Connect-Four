@@ -6,6 +6,7 @@
 #define COL 7
 #define SIZE 3
 
+fgfgfg
 void printBoard(char *board);
 void printWiningBoard(char *board);
 void takeTurn(int round, char *board, char *player);
