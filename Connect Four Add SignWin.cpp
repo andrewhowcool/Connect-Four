@@ -9,7 +9,7 @@
 void printBoard(char *board);
 void printWiningBoard(char *board);
 void takeTurn(int round, char *board, char *player);
-void savingWinnnigPos(int a,int b,int c,int d);
+void savingWinnigPos(int a,int b,int c,int d);
 bool checkWin(int insertPos, char *board);
 bool checkFour(char *board, int a, int b, int c, int d);
 bool checkVertical(int insertPos, char *board);
@@ -132,7 +132,7 @@ void takeTurn(int round, char *board, char *player){
 	}
 }
 
-void savingWinnnigPos(int a,int b,int c,int d){
+void savingWinnigPos(int a,int b,int c,int d){
 	winningPos[0]=a;
 	winningPos[1]=b;
 	winningPos[2]=c;
@@ -164,7 +164,7 @@ bool checkVertical(int insertPos, char *board){
 	for(start = 0; i <= 3; start += 7, ++i){
 		for(add = start; j <= 7; ++add, ++j){
 			if(checkFour(board, add, add + 7, add + 7*2, add + 7*3)){
-				savingWinnnigPos(add, add + 7, add + 7*2, add + 7*3);
+				savingWinnigPos(add, add + 7, add + 7*2, add + 7*3);
 				
 				return 1;
 			}
@@ -182,7 +182,7 @@ bool checkHorizontal(int insertPos, char *board){
 			if(checkFour(board, add, add + 1, add + 2, add + 3) == 1){
 			
 			//check form the last left side to last right side
-			savingWinnnigPos(add, add + 1, add + 2, add + 3);
+			savingWinnigPos(add, add + 1, add + 2, add + 3);
 			return 1;
 			}
 		}
@@ -196,7 +196,7 @@ bool checkTilted(int insertPos, char *board){
 	for(start = 0; i <= 3; start += 7, ++i){ //check negative slop
 		for(add = start; j <= 4; add++, j++ ){
 			if(checkFour(board, add, add + 8, add + 8*2, add + 8*3) == 1){
-				savingWinnnigPos(add, add + 8, add + 8*2, add + 8*3);
+				savingWinnigPos(add, add + 8, add + 8*2, add + 8*3);
 			
 				return 1;
 			}
@@ -209,7 +209,7 @@ bool checkTilted(int insertPos, char *board){
 	for(start = 3; i <= 3; start += 7, ++i){ //check positive slope
 		for(add = start; j <= 4; add++, j++){
 			if(checkFour(board, add, add + 6, add + 6*2, add + 6*3)){
-				savingWinnnigPos(add, add + 6, add + 6*2, add + 6*3);
+				savingWinnigPos(add, add + 6, add + 6*2, add + 6*3);
 				
 				return 1;
 			}
