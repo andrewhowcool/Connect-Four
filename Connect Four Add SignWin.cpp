@@ -15,6 +15,7 @@ bool checkFour(char *board, int a, int b, int c, int d);
 bool checkVertical(int insertPos, char *board);
 bool checkHorizontal(int insertPos, char *board);
 bool checkTilted(int insertPos, char *board);
+hello
 
 int insertPos = 0; //get final insert position in takeTurn function
 int winningPos[4];//the four winning position
