@@ -6,6 +6,7 @@
 #define COL 7
 #define SIZE 3
 
+int gameMode(char *board, int round);
 void printBoard(char *board);
 void printWiningBoard(char *board);
 void takeTurn(int round, char *board, char *player);
@@ -15,9 +16,12 @@ bool checkFour(char *board, int a, int b, int c, int d);
 bool checkVertical(int insertPos, char *board);
 bool checkHorizontal(int insertPos, char *board);
 bool checkTilted(int insertPos, char *board);
+void saveFile(char *board);
+int loadFile(char *boar, int round);
 
 int insertPos = 0; //get final insert position in takeTurn function
 int winningPos[4];//the four winning position
+int position; //user enter number
 
 int main(void){
 	char board[ROW * COL];
@@ -26,7 +30,7 @@ int main(void){
 	int playagain;
 	
 	do{
-		memset(board,' ', ROW * COL); //innitialize array with blank
+		round = gameMode(board, round);
 	
 		printBoard(board); //print the first board
 	
@@ -38,23 +42,51 @@ int main(void){
 			takeTurn(round, board, player); //take turn
 			//printf("insertPOs %d = %d\n", round % 2 + 1 , insertPos);
 		}
-		if(checkWin(insertPos, board) == 1){
+		if(checkWin(insertPos, board) && position != 0){
 			printWiningBoard(board);
 			printf("Player %d (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
 		}
 		else if(checkWin(insertPos, board) != 1 && round == ROW * COL + 1){ //tie
 			printf("Tie !\n");
 		}
-	
-		printf("Enter (1) to play again\n");
-		printf("Enter (0) to end the game\n");
-		scanf("%d",&playagain);
+		if(position != 0){
+			printf("Enter (1) to play again\n");
+			printf("Enter (0) to end the game\n");
+			scanf("%d",&playagain);
+		}
+		
 	}while(playagain==1);
 	
-	printf("Thanks for playing.\n\n\n");
+	if(position == 0){
+		printf("Saving Complete!\n");
+		printf("Thanks for playing.\n\n\n");
+	}
+	else{
+		printf("Thanks for playing.\n\n\n");
+	}
+	
 	
 	system("pause");
 	return 0;
+}
+
+int gameMode(char *board, int round){
+	int mode;
+	
+	printf("New Game : 1\nLoading Game : 2\n");
+	scanf("%d", &mode);
+	
+	while(mode != 1 && mode != 2){
+		printf("Enter 1 or 2.\n");
+		scanf("%d", &mode);
+	}
+	
+	if(mode == 1){
+		memset(board,' ', ROW * COL); //innitialize array with blank
+	}
+	else if (mode == 2){
+		return loadFile(board, round); //return old board and old round
+	}
 }
 
 void printBoard(char *board){
@@ -105,42 +137,47 @@ void printWiningBoard(char *board){
 }
 
 void takeTurn(int round, char *board, char *player){
-	int position, bottom, test = 0;
+	int bottom, test = 0;
 	
-	printf("player %d (%c) : Enter 1 ~ 7\n", round % 2 + 1, player[round % 2]); //player one go first
+	printf("player %d (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", round % 2 + 1, player[round % 2]); //player one go first
 	scanf("%d", &position);
 	
-	while(position > 7 || position < 1){ //anti-fool
-		printf("Enter 1 ~ 7\n");
+	while(position > 7 || position < 0){ //anti-fool
+		printf("Enter 1 ~ 7, 0 to Save Current Game\n");
 		scanf("%d", &position);
 	}
-	while(test == 0){  //check whether insertion is complete, if complete, test = 1
-		for(bottom = position + 34; bottom >= position - 1; bottom -= 7){ //check whether the position in board is blank from bottom
-			if(board[bottom] == ' '){
-				board[bottom] = player[round % 2]; //insert player sign to board
-				test = 1; //insert complete
-				
-				printBoard(board); //print new board
-				insertPos = bottom; //get final insert position store in global variable
-				break; //end for loop
-			}
-		else if(bottom == position - 1 && board[bottom] != ' '){ //column full, insertion fail, test = 0
-			printf("Column full! Enter other column.\n");
-			scanf("%d", &position);
+	if(position != 0){
+		while(test == 0){  //check whether insertion is complete, if complete, test = 1
+			for(bottom = position + 34; bottom >= position - 1; bottom -= 7){ //check whether the position in board is blank from bottom
+				if(board[bottom] == ' '){
+					board[bottom] = player[round % 2]; //insert player sign to board
+					test = 1; //insert complete
+					
+					printBoard(board); //print new board
+					insertPos = bottom; //get final insert position store in global variable
+					break; //end for loop
+				}
+			else if(bottom == position - 1 && board[bottom] != ' '){ //column full, insertion fail, test = 0
+				printf("Column full! Enter other column.\n");
+				scanf("%d", &position);
+				}
 			}
 		}
+	}
+	else if(position == 0){
+		saveFile(board); //save record to file
 	}
 }
 
 void savingWinnigPos(int a,int b,int c,int d){
-	winningPos[0]=a;
-	winningPos[1]=b;
-	winningPos[2]=c;
-	winningPos[3]=d;
-}
+	winningPos[0] = a;
+	winningPos[2] = b;
+	winningPos[2] = c;
+	winningPos[3] = d;
+	}
 
 bool checkWin(int insertPos, char *board){
-	if(checkVertical(insertPos, board) == 1 || checkHorizontal(insertPos, board) == 1 || checkTilted(insertPos, board) == 1){
+	if(checkVertical(insertPos, board) || checkHorizontal(insertPos, board) || checkTilted(insertPos, board) || position == 0){
 		return 1;
 	}
 	else{
@@ -217,4 +254,35 @@ bool checkTilted(int insertPos, char *board){
 		j = 1;
 	} 
 	return 0;
+}
+
+void saveFile(char *board){
+	FILE *file;
+	
+	file = fopen("record.txt", "w");
+	fwrite(board, sizeof(char), COL * ROW, file); //write board to file
+	fclose(file);
+}
+
+int loadFile(char *board, int round){
+	int i = 0, count = 0;
+	FILE *file;
+	
+	file = fopen("record.txt", "r");
+	
+	while((fscanf(file,"%c",&board[i])) != EOF) //scanf and check EOF
+        {
+            i++;
+        }
+        
+    fclose(file);
+    
+    for(i = 0; i < COL*ROW; ++i){
+    	if(board[i] != ' '){
+    		count++;
+		}
+	}
+	if(count % 2 == 1 || count == 1){
+		return 3; //player two play
+	}
 }
