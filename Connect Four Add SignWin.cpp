@@ -2,20 +2,23 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <time.h>
+#include <conio.h>
 #define ROW 6 //define board
 #define COL 7
 #define SIZE 3
+
 
 void printBoard(char *board);
 void printWiningBoard(char *board);
 void takeTurn(int round, char *board, char *player);
 void savingWinnigPos(int a,int b,int c,int d);
+int timer(void);
 bool checkWin(int insertPos, char *board);
 bool checkFour(char *board, int a, int b, int c, int d);
 bool checkVertical(int insertPos, char *board);
 bool checkHorizontal(int insertPos, char *board);
 bool checkTilted(int insertPos, char *board);
-
 
 int insertPos = 0; //get final insert position in takeTurn function
 int winningPos[4];//the four winning position
@@ -31,17 +34,18 @@ int main(void){
 	
 		printBoard(board); //print the first board
 	
-		takeTurn(round, board, player); 
+		takeTurn(round, board, player); //take turn
 		//printf("insertPOs %d = %d\n", round % 2 + 1 , insertPos);
 		while(checkWin(insertPos, board) != 1 && round != ROW * COL + 1){ //  win : 1
 			++round; //next round
-		
 			takeTurn(round, board, player); //take turn
 			//printf("insertPOs %d = %d\n", round % 2 + 1 , insertPos);
 		}
 		if(checkWin(insertPos, board) == 1){
-			printWiningBoard(board);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
 			printf("Player %d (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
+			printWiningBoard(board);
 		}
 		else if(checkWin(insertPos, board) != 1 && round == ROW * COL + 1){ //tie
 			printf("Tie !\n");
@@ -57,6 +61,38 @@ int main(void){
 	system("pause");
 	return 0;
 }
+
+int timer(void){//倒數計時 
+	int sec;//剩餘秒數 
+	int position=0;//輸入第幾行(1~7) 
+	char input=0;//輸入字元 
+    
+    for(sec=10;sec>0;sec--){//每秒印出剩餘秒數 
+    	Sleep(300);
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//紅字 
+    	printf("%d  ",sec);
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//白字 
+    	
+    	if (kbhit()){//判定是否有輸入字元 
+    		input=getchar();
+    		break;//若有，則停止倒數 
+		}
+	}
+
+    
+	if(input==0){
+		printf("\nThe time is up\n");
+    	printf("Take turn!!\n");
+		return position;//若沒輸入行數，則傳回0 
+	}
+	else if(input!=0){
+		position=input-48;//將char轉換為int 
+		return position;//將行數回傳 
+	}
+	
+	
+}
+
 
 void printBoard(char *board){
 	
@@ -106,15 +142,25 @@ void printWiningBoard(char *board){
 }
 
 void takeTurn(int round, char *board, char *player){
-	int position, bottom, test = 0;
+	int position=0, bottom, test = 0;
 	
-	printf("player %d (%c) : Enter 1 ~ 7\n", round % 2 + 1, player[round % 2]); //player one go first
-	scanf("%d", &position);
+	do{
+		printf("player %d (%c) : Enter 1 ~ 7\n", round % 2 + 1, player[round % 2]); //player one go first
+		position=timer();
+		if(position==0){
+			round++;
+		}
+		
+		
+		
+	}while(position==0);//若沒有輸入行數則輪到下個玩家 
 	
-	while(position > 7 || position < 1){ //anti-fool
+	
+	
+	/*while(position > 7 || position < 1){ //anti-fool
 		printf("Enter 1 ~ 7\n");
-		scanf("%d", &position);
-	}
+		position=timer(round);
+	}*/
 	while(test == 0){  //check whether insertion is complete, if complete, test = 1
 		for(bottom = position + 34; bottom >= position - 1; bottom -= 7){ //check whether the position in board is blank from bottom
 			if(board[bottom] == ' '){
@@ -127,7 +173,7 @@ void takeTurn(int round, char *board, char *player){
 			}
 		else if(bottom == position - 1 && board[bottom] != ' '){ //column full, insertion fail, test = 0
 			printf("Column full! Enter other column.\n");
-			scanf("%d", &position);
+			position=timer();
 			}
 		}
 	}
@@ -151,7 +197,7 @@ bool checkWin(int insertPos, char *board){
 
 bool checkFour(char *board, int a, int b, int c, int d){
 	if(board[a] == board[b] && board[b] == board[c] && board[c] == board[d] 
-		&& d < COL * ROW && d >= 0 && a >= 0 && a < COL * ROW && board[a] != ' '){ // a:start, d:end must between 0 ~ 41
+		&& d < COL * ROW && d >= 0 && a >= 00 && a < COL * ROW){ // a:start, d:end must between 0 ~ 41
 		return 1;
 	}
 	else{
@@ -160,62 +206,40 @@ bool checkFour(char *board, int a, int b, int c, int d){
 }
 
 bool checkVertical(int insertPos, char *board){
-	int start, add, i = 1, j = 1;
+	savingWinnigPos(insertPos,insertPos + COL,insertPos + COL * 2,insertPos + COL * 3);
+	return checkFour(board, insertPos, insertPos + COL, insertPos + COL * 2, insertPos + COL * 3);
 	
-	for(start = 0; i <= 3; start += 7, ++i){
-		for(add = start; j <= 7; ++add, ++j){
-			if(checkFour(board, add, add + 7, add + 7*2, add + 7*3)){
-				savingWinnigPos(add, add + 7, add + 7*2, add + 7*3);
-				
-				return 1;
-			}
-		}
-		j = 1;
-	}
-	return 0;
 }
 
 bool checkHorizontal(int insertPos, char *board){
-	int start, add, i = 1, j = 1;
+	int start;
 	
-	for(start = 0; i <= 6; start += 7, ++i){
-		for(add = start; j <= 4; add++, j++){
-			if(checkFour(board, add, add + 1, add + 2, add + 3) == 1){
-			
-			//check form the last left side to last right side
-			savingWinnigPos(add, add + 1, add + 2, add + 3);
+	for(start = insertPos - 3; start <= insertPos; ++start){
+		if(checkFour(board, start, start + 1, start + 2, start + 3) == 1){ 
+		//check form the last left side to last right side
+			savingWinnigPos(start,start + 1,start + 2,start + 3);
 			return 1;
-			}
 		}
-			j = 1;
+		else{
+			return 0;
+		}
 	}
-	return 0;
 }
 bool checkTilted(int insertPos, char *board){
-	int start, i = 1, j = 1 , add;
+	int start;
 	
-	for(start = 0; i <= 3; start += 7, ++i){ //check negative slop
-		for(add = start; j <= 4; add++, j++ ){
-			if(checkFour(board, add, add + 8, add + 8*2, add + 8*3) == 1){
-				savingWinnigPos(add, add + 8, add + 8*2, add + 8*3);
-			
-				return 1;
-			}
+	for(start = insertPos + ROW * 3; start >= insertPos; start -= ROW){
+		if(checkFour(board, start, start - ROW, start - ROW * 2, start - ROW * 3) == 1){ 
+		//check positive slop from Lower left corner
+			savingWinnigPos(start,start - ROW,start - ROW * 2,start - ROW * 3);
+			return 1;
 		}
-		j = 1;
 	}
-	i = 1;
-	j = 1;
-	
-	for(start = 3; i <= 3; start += 7, ++i){ //check positive slope
-		for(add = start; j <= 4; add++, j++){
-			if(checkFour(board, add, add + 6, add + 6*2, add + 6*3)){
-				savingWinnigPos(add, add + 6, add + 6*2, add + 6*3);
-				
-				return 1;
-			}
+	for(start = insertPos + 8 * 3; start >= insertPos; start -= 8){
+		if(checkFour(board, start, start - 8, start - 8 * 2, start - 8 * 3) == 1){ 
+		//check negative slop from Lower right corner 
+			return 1;
 		}
-		j = 1;
-	} 
+	}
 	return 0;
 }
