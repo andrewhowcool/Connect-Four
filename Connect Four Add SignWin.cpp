@@ -2,10 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <conio.h>
 #define ROW 6 //define board
 #define COL 7
 #define SIZE 3
 
+int inputChess(void);
 int gameMode(char *board, int round);
 void printBoard(char *board);
 void printWiningBoard(char *board);
@@ -41,10 +43,13 @@ int main(void){
 		
 			takeTurn(round, board, player); //take turn
 			//printf("insertPOs %d = %d\n", round % 2 + 1 , insertPos);
+
 		}
-		if(checkWin(insertPos, board) && position != 0){
+		if(checkWin(insertPos, board)==1 && position != 0){
 			printWiningBoard(board);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
 			printf("Player %d (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 		}
 		else if(checkWin(insertPos, board) != 1 && round == ROW * COL + 1){ //tie
 			printf("Tie !\n");
@@ -93,7 +98,7 @@ void printBoard(char *board){
 	
 	size_t i;
 	
-	puts("--------Connect Four---------\n");
+	puts("\n--------Connect Four---------\n");
 	
 	for(i = 0; i < ROW * COL; ++i){
 		if(i % COL == 0 && i != 0){  //change line every seven elements in one row
@@ -139,14 +144,18 @@ void printWiningBoard(char *board){
 void takeTurn(int round, char *board, char *player){
 	int bottom, test = 0;
 	
-	printf("player %d (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", round % 2 + 1, player[round % 2]); //player one go first
-	scanf("%d", &position);
+	do{
+		printf("player %d (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", round % 2 + 1, player[round % 2]); //player one go first
+		position=inputChess();
+		if(position==-1){
+			round++;
+		}
+		//system("pause");
 	
-	while(position > 7 || position < 0){ //anti-fool
-		printf("Enter 1 ~ 7, 0 to Save Current Game\n");
-		scanf("%d", &position);
-	}
-	if(position != 0){
+	}while(position==-1);//若沒有輸入行數則輪到下個玩家 
+	
+	
+	if(position > 0){
 		while(test == 0){  //check whether insertion is complete, if complete, test = 1
 			for(bottom = position + 34; bottom >= position - 1; bottom -= 7){ //check whether the position in board is blank from bottom
 				if(board[bottom] == ' '){
@@ -167,11 +176,12 @@ void takeTurn(int round, char *board, char *player){
 	else if(position == 0){
 		saveFile(board); //save record to file
 	}
+
 }
 
 void savingWinnigPos(int a,int b,int c,int d){
 	winningPos[0] = a;
-	winningPos[2] = b;
+	winningPos[1] = b;
 	winningPos[2] = c;
 	winningPos[3] = d;
 	}
@@ -285,4 +295,35 @@ int loadFile(char *board, int round){
 	if(count % 2 == 1 || count == 1){
 		return 3; //player two play
 	}
+} 
+
+int inputChess(void){//倒數計時 
+	int sec;//剩餘秒數 
+	int position=-1;//輸入第幾行(1~7) 
+	char input=-1;//輸入字元 
+    
+    for(sec=10;sec>0;sec--){//每秒印出剩餘秒數 
+    	Sleep(300);
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//紅字 
+    	printf("%d  ",sec);
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//白字 
+    	
+    	if (kbhit()){//判定是否有輸入字元 
+    		input=getche();
+    		break;//若有，則停止倒數 
+		}
+	}
+
+    
+	if(input==-1){
+		printf("\nThe time is up\n");
+    	printf("Take turn!!\n\n");
+		return position;//若沒輸入行數，則傳回-1
+	}
+	else if(input!=-1){
+		position=input-48;//將char轉換為int 
+		return position;//將行數回傳 
+	}
+	
+	
 }
