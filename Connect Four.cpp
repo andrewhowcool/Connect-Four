@@ -35,7 +35,7 @@ int main(void){
 	
 	do{
 		round = gameMode(board, round);
-		printf("round = %d", round);
+
 		
 		printBoard(board); //print the first board
 	
