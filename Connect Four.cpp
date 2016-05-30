@@ -176,7 +176,7 @@ void takeTurn(int round, char *board, char *player){
 		}
 		//system("pause");
 	
-	}while(position==-1);//­Y¨S¦³¿é¤J¦æ¼Æ«h½ü¨ì¤U­Óª±®a 
+	}while(position==-1);//è‹¥æ²’æœ‰è¼¸å…¥è¡Œæ•¸å‰‡è¼ªåˆ°ä¸‹å€‹ç©å®¶ 
 	
 	
 	if(position > 0){
@@ -320,24 +320,24 @@ int loadFile(char *board, int round){
 		return 3; //player two play
 	}
 	else{
-		return 2; //player two play
+		return 2; //player one play
 	}
 } 
 
-int inputChess(void){//­Ë¼Æ­p®É 
-	int sec;//³Ñ¾l¬í¼Æ 
-	int position = -1;//¿é¤J²Ä´X¦æ(1~7) 
-	char input = -1;//¿é¤J¦r¤¸ 
+int inputChess(void){//å€’æ•¸è¨ˆæ™‚ 
+	int sec;//å‰©é¤˜ç§’æ•¸ 
+	int position = -1;//è¼¸å…¥ç¬¬å¹¾è¡Œ(1~7) 
+	char input = -1;//è¼¸å…¥å­—å…ƒ 
     
-    for(sec=10;sec>0;sec--){//¨C¬í¦L¥X³Ñ¾l¬í¼Æ 
+    for(sec=10;sec>0;sec--){//æ¯ç§’å°å‡ºå‰©é¤˜ç§’æ•¸ 
     	Sleep(1000);
-    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//¬õ¦r 
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//ç´…å­— 
     	printf("%d  ",sec);
-    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//¥Õ¦r 
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//ç™½å­— 
     	
-    	if (kbhit()){//§P©w¬O§_¦³¿é¤J¦r¤¸ 
+    	if (kbhit()){//åˆ¤å®šæ˜¯å¦æœ‰è¼¸å…¥å­—å…ƒ 
     		input=getche();
-    		break;//­Y¦³¡A«h°±¤î­Ë¼Æ 
+    		break;//è‹¥æœ‰ï¼Œå‰‡åœæ­¢å€’æ•¸ 
 		}
 	}
 
@@ -345,11 +345,11 @@ int inputChess(void){//­Ë¼Æ­p®É
 	if(input==-1){
 		printf("\nThe time is up\n");
     	printf("Take turn!!\n\n");
-		return position;//­Y¨S¿é¤J¦æ¼Æ¡A«h¶Ç¦^-1
+		return position;//è‹¥æ²’è¼¸å…¥è¡Œæ•¸ï¼Œå‰‡å‚³å›-1
 	}
 	else if(input!=-1){
-		position = input-48;//±NcharÂà´«¬°int 
-		return position;//±N¦æ¼Æ¦^¶Ç 
+		position = input-48;//å°‡charè½‰æ›ç‚ºint 
+		return position;//å°‡è¡Œæ•¸å›å‚³ 
 	}
 	
 	
@@ -445,7 +445,7 @@ int robotInputChess(char *board){
 		}
 	}
 	
-	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : §PÂ_¬O§_¬°³Ì©³¼h !!
+	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : åˆ¤æ–·æ˜¯å¦ç‚ºæœ€åº•å±¤ !!
 		for(j=i;j<=(i+35);j=j+7){
 			
 			if(i>=1&&i<=4){// OOO_
@@ -489,12 +489,12 @@ int robotInputChess(char *board){
 	}
 
 	
-	if(board[3]==' '){//©¹¤¤¶¡¤U 
+	if(board[3]==' '){//å¾€ä¸­é–“ä¸‹ 
 		input=4;
 		return input;
 	}
 	else if(board[3]!=' '){
-		for(i=4;i!=6;i++){//©¹¤¤¶¡¤U 
+		for(i=4;i!=6;i++){//å¾€ä¸­é–“ä¸‹ 
 	
 			if(board[i]==' '){
 				input=i+1;
