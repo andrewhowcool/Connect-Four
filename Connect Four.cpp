@@ -26,6 +26,7 @@ int loadFile(char *boar, int round);
 int insertPos = 0; //get final insert position in takeTurn function
 int winningPos[4];//the four winning position
 int position; //user enter number
+int playMode;
 
 int main(void){
 	char board[ROW * COL];
@@ -34,20 +35,22 @@ int main(void){
 	int playagain;
 	
 	do{
-		round = gameMode(board, round);
-
+		gameMode(board, round);
 		
 		printBoard(board); //print the first board
 	
-		if(round==2){//human VS. human
+		if(playMode == 1 || playMode == 3){// new game : human VS. human
+		
+			if(playMode == 3){ //load game : human v.s human
+				round = loadFile(board, round);
+			} 
+			
 			takeTurn(round, board, player); 
-			//printf("insertPOs %d = %d\n", round % 2 + 1 , insertPos);
+
 			while(checkWin(insertPos, board) != 1 && round != ROW * COL + 1){ //  win : 1
 				++round; //next round
 		
 				takeTurn(round, board, player); //take turn
-				//printf("insertPOs %d = %d\n", round % 2 + 1 , insertPos);
-
 			}
 			
 			if(checkWin(insertPos, board)==1 && position != 0){
@@ -61,16 +64,19 @@ int main(void){
 			}
 		}
 		
+		else if (playMode == 2 || playMode == 4){ //new game :  human VS. robot  
 		
-		if(round==4){// round==4 : new human VS. robot  
+			if(playMode == 4){ //load game : human v.s robot
+				round = loadFile(board, round);
+			}
 			
 			robotTakeTurn(round, board, player);
+			
 			while(checkWin(insertPos, board) != 1 && round != ROW * COL + 1){ //  win : 1
 		
 				robotTakeTurn(round, board, player); //take turn
 			}
 		}
-		
 
 		if(position != 0){
 			printf("Enter (1) to play again\n");
@@ -83,7 +89,6 @@ int main(void){
 	if(position == 0){
 		printf("\nSaving Complete!\n");
 		printf("\nThanks for playing.\n\n\n");
-		printf("round = %d, position = %d", round, position);
 	}
 	else{
 		printf("\nThanks for playing.\n\n\n");
@@ -95,26 +100,39 @@ int main(void){
 }
 
 int gameMode(char *board, int round){
-	int mode;
+	int gameMode, newMode;
 	
-	printf("New Game Human VS. Human: 1\nNew Game Human VS. Robot: 2\nLoading Game : 3\n");
-	scanf("%d", &mode);
+	printf("New Game Human VS. Human: 1\nNew Game Human VS. Robot: 2\n");
+	scanf("%d", &gameMode);
 	
-	while(mode != 1 && mode != 2 && mode != 3){
-		printf("Enter 1 or 2 or 3.\n");
-		scanf("%d", &mode);
+	while(gameMode != 1 && gameMode != 2 ){
+		printf("Enter 1 or 2 \n");
+		scanf("%d", &gameMode);
 	}
 	
-	if(mode == 1){//New Game Human VS. Human
+	printf("New Game : 1 \nLoad Game : 2\n");
+	scanf("%d", &newMode);
+	
+	while(newMode != 1 && newMode != 2 ){
+		printf("Enter 1 or 2 \n");
+		scanf("%d", &newMode);
+	}
+	
+	if(gameMode == 1 && newMode == 1){//New Game : Human VS. Human
 		memset(board,' ', ROW * COL); //innitialize array with blank
-		return 2;
+		playMode = 1;
 	}
-	else if(mode == 2){//New Game Human VS. Robot
+	else if(gameMode == 2 && newMode == 1){//New Game : Human VS. Robot
 		memset(board,' ', ROW * COL); //innitialize array with blank
-		return 4;
+		playMode = 2;
 	}
-	else if (mode == 3){//Loading Game
+	else if (gameMode == 1 && newMode == 2){ //Loading Game : human v.s human
+		playMode = 3;                  
 		return loadFile(board, round); //return old board and old round
+	}
+	else if (gameMode == 2 && newMode == 2){ //loadding Game : human V.s robot
+		playMode = 4;
+		return loadFile(board, round);
 	}
 }
 
@@ -129,8 +147,16 @@ void printBoard(char *board){
 			printf("|\n");
 			puts("-----------------------------");
 		}
+		if(i == insertPos){
+				printf("|", board[i]);
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE);//print light green
+				printf(" %c ", board[i]); //print board with winning position
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
+		}
+		else{
+			printf("| %c ", board[i]); //print |board[0]|board[1]|board[2]|...
+		}
 		
-		printf("| %c ", board[i]); //print |board[0]|board[1]|board[2]|...
 	}
 	printf("|\n"); //print the last | 
 	puts("-----------------------------");
@@ -170,7 +196,7 @@ void takeTurn(int round, char *board, char *player){
 	
 	do{
 		printf("player %d (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", round % 2 + 1, player[round % 2]); //player one go first
-		position = inputChess();
+		position=inputChess();
 		if(position==-1){
 			round++;
 		}
@@ -185,9 +211,9 @@ void takeTurn(int round, char *board, char *player){
 				if(board[bottom] == ' '){
 					board[bottom] = player[round % 2]; //insert player sign to board
 					test = 1; //insert complete
-					
-					printBoard(board); //print new board
 					insertPos = bottom; //get final insert position store in global variable
+					printBoard(board); //print new board
+					
 					break; //end for loop
 				}
 			else if(bottom == position - 1 && board[bottom] != ' '){ //column full, insertion fail, test = 0
@@ -319,15 +345,12 @@ int loadFile(char *board, int round){
 	if(count % 2 == 1 || count == 1){
 		return 3; //player two play
 	}
-	else{
-		return 2; //player one play
-	}
 } 
 
 int inputChess(void){//倒數計時 
 	int sec;//剩餘秒數 
-	int position = -1;//輸入第幾行(1~7) 
-	char input = -1;//輸入字元 
+	int position=-1;//輸入第幾行(1~7) 
+	char input=-1;//輸入字元 
     
     for(sec=10;sec>0;sec--){//每秒印出剩餘秒數 
     	Sleep(1000);
@@ -348,7 +371,7 @@ int inputChess(void){//倒數計時
 		return position;//若沒輸入行數，則傳回-1
 	}
 	else if(input!=-1){
-		position = input-48;//將char轉換為int 
+		position=input-48;//將char轉換為int 
 		return position;//將行數回傳 
 	}
 	
@@ -360,7 +383,7 @@ void robotTakeTurn(int round, char *board, char *player){
 	
 	//human move
 	printf("player (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", player[round % 2]); //player go first
-	position = inputChess(); 
+	position=inputChess(); 
 	
 	
 	if(position > 0){//check human move
@@ -369,9 +392,9 @@ void robotTakeTurn(int round, char *board, char *player){
 				if(board[bottom] == ' '){
 					board[bottom] = player[round % 2]; //insert player sign to board
 					test = 1; //insert complete
-					
-					printBoard(board); //print new board
 					insertPos = bottom; //get final insert position store in global variable
+					printBoard(board); //print new board
+					
 					break; //end for loop
 				}
 			else if(bottom == position - 1 && board[bottom] != ' '){ //column full, insertion fail, test = 0
@@ -409,9 +432,9 @@ void robotTakeTurn(int round, char *board, char *player){
 					if(board[bottom] == ' '){
 						board[bottom] = player[round % 2]; //insert player sign to board
 						test = 1; //insert complete
-					
-						printBoard(board); //print new board
 						insertPos = bottom; //get final insert position store in global variable
+						printBoard(board); //print new board
+						
 						break; //end for loop
 					}
 				}
@@ -448,7 +471,7 @@ int robotInputChess(char *board){
 	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : 判斷是否為最底層 !!
 		for(j=i;j<=(i+35);j=j+7){
 			
-			if(i>=1&&i<=4){// OOO_
+			if(i>=1&&i<=4){// XOOO_ 
 				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
 					if(board[j+2]==' '&&(board[j+9]!=' '||j>=35)){
 						input=(j+2)%7+1;
@@ -456,7 +479,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=2&&i<=5){// _OOO 
+			if(i>=2&&i<=5){// _OOOX 
 				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
 					if(board[j-2]==' '&&(board[j+5]!=' '||j>=35)){
 						input=(j-2)%7+1;
@@ -467,14 +490,7 @@ int robotInputChess(char *board){
 			
 			//printf("\nj is %d:%c\n",j,board[j]);
 			
-			if(board[j-1]!=' '&&board[j+1]==board[j-1]){// _O_O_
-				if(board[j]==' '&&(board[j+7]!=' '||j>=35)){
-					input=j%7+1;
-					return input;
-				}
-			}
-			
-			if(board[j]!=' '&&board[j]==board[j+1]&&board[j-1]==' '&&board[j+2]==' '){// _OO_
+			if(board[j]!=' '&&board[j]==board[j+1]){// _OO_
 				if(board[j+2]==' '&&(board[j+9]!=' '||j>=35)){// XOO_ 
 					input=(j+2)%7+1;
 					return input;
@@ -485,9 +501,94 @@ int robotInputChess(char *board){
 					return input;
 				}
 			}
+			
+			if(board[j-1]!=' '&&board[j+1]==board[j-1]){// _O_O_
+				if(board[j]==' '&&(board[j+7]!=' '||j>=35)){
+					input=j%7+1;
+					return input;
+				}
+			}
 		}
 	}
-
+	
+	for(i=1;i<=5;i++){//checking tilted is three or not
+		for(j=i+7;j<=(i+28);j=j+7){
+			
+			if(i>=1&&i<=4&&j>13){// XOOO_ 正斜率  j>13:上面兩列不檢查 
+				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
+					if(board[j-12]==' '&&board[j-5]!=' '){
+						input=(j-12)%7+1;
+						return input;
+					}
+				}
+			}
+			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX 正斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
+					if(board[j+12]==' '&&(board[j+19]!=' '||j>=21)){
+						input=(j+12)%7+1;
+						return input;
+					}
+				}
+			}
+			
+			if(i>=1&&i<=4&&j>13){// _OOOX 負斜率  j>13:上面兩列不檢查 
+				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
+					if(board[j-16]==' '&&board[j-9]!=' '){
+						input=(j-16)%7+1;
+						return input;
+					}
+				}
+			}
+			if(i>=2&&i<=5&&j<28&&j>6){// XOOO_ 負斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
+					if(board[j+16]==' '&&(board[j+23]!=' '||j>=21)){
+						input=(j+16)%7+1;
+						return input;
+					}
+				}
+			}
+			
+			//printf("\nj is %d:%c\n",j,board[j]);
+			
+			if(board[j]!=' '&&board[j]==board[j-6]){// _OO_ 正斜率
+				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ 正斜率
+					input=(j-12)%7+1;
+					return input;
+				}
+				
+				if(i>=2&&i<=5&&board[j+6]==' '&&(board[j+13]!=' '||j>=28)){// _OOX 正斜率
+					input=(j+6)%7+1;
+					return input;
+				}
+			}
+			
+			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35){// _O_O_ 正斜率
+				if(board[j]==' '&&board[j+7]!=' '){
+					input=j%7+1;
+					return input;
+				}
+			}
+			
+			if(board[j]!=' '&&board[j]==board[j-8]){// _OO_ 負斜率
+				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX 負斜率
+					input=(j-16)%7+1;
+					return input;
+				}
+				
+				if(j<35&&board[j+8]==' '&&(board[j+15]!=' '||j>=28)){// XOO_ 負斜率
+					input=(j+8)%7+1;
+					return input;
+				}
+			}
+			
+			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35){// _O_O_ 負斜率
+				if(board[j]==' '&&board[j+7]!=' '){
+					input=j%7+1;
+					return input;
+				}
+			}
+		}
+	}
 	
 	if(board[3]==' '){//往中間下 
 		input=4;
