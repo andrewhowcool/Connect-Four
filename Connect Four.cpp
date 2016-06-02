@@ -102,7 +102,7 @@ int main(void){
 int gameMode(char *board, int round){
 	int gameMode, newMode;
 	
-	printf("New Game Human VS. Human: 1\nNew Game Human VS. Robot: 2\n");
+	printf("Human VS. Human: 1\nHuman VS. Robot: 2\n");
 	scanf("%d", &gameMode);
 	
 	while(gameMode != 1 && gameMode != 2 ){
@@ -149,7 +149,7 @@ void printBoard(char *board){
 		}
 		if(i == insertPos){
 				printf("|", board[i]);
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE);//print light green
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_BLUE);//print blue
 				printf(" %c ", board[i]); //print board with winning position
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 		}
@@ -468,52 +468,8 @@ int robotInputChess(char *board){
 		}
 	}
 	
-	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : 判斷是否為最底層 !!
-		for(j=i;j<=(i+35);j=j+7){
-			
-			if(i>=1&&i<=4){// XOOO_ 
-				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
-					if(board[j+2]==' '&&(board[j+9]!=' '||j>=35)){
-						input=(j+2)%7+1;
-						return input;
-					}
-				}
-			}
-			if(i>=2&&i<=5){// _OOOX 
-				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
-					if(board[j-2]==' '&&(board[j+5]!=' '||j>=35)){
-						input=(j-2)%7+1;
-						return input;
-					}
-				}
-			}
-			
-			//printf("\nj is %d:%c\n",j,board[j]);
-			
-			if(board[j]!=' '&&board[j]==board[j+1]){// _OO_
-				if(board[j+2]==' '&&(board[j+9]!=' '||j>=35)){// XOO_ 
-					input=(j+2)%7+1;
-					return input;
-				}
-				
-				if(board[j-1]==' '&&(board[j+6]!=' '||j>=35)){// _OOX
-					input=(j-1)%7+1;
-					return input;
-				}
-			}
-			
-			if(board[j-1]!=' '&&board[j+1]==board[j-1]){// _O_O_
-				if(board[j]==' '&&(board[j+7]!=' '||j>=35)){
-					input=j%7+1;
-					return input;
-				}
-			}
-		}
-	}
-	
 	for(i=1;i<=5;i++){//checking tilted is three or not
 		for(j=i+7;j<=(i+28);j=j+7){
-			
 			if(i>=1&&i<=4&&j>13){// XOOO_ 正斜率  j>13:上面兩列不檢查 
 				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j-12]==' '&&board[j-5]!=' '){
@@ -524,14 +480,14 @@ int robotInputChess(char *board){
 			}
 			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX 正斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
 				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
-					if(board[j+12]==' '&&(board[j+19]!=' '||j>=21)){
+					if(board[j+12]==' '&&((j<21&&board[j+19]!=' ')||j>=21)){
 						input=(j+12)%7+1;
 						return input;
 					}
 				}
 			}
 			
-			if(i>=1&&i<=4&&j>13){// _OOOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=2&&i<=5&&j>13){// _OOOX 負斜率  j>13:上面兩列不檢查 
 				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j-16]==' '&&board[j-9]!=' '){
 						input=(j-16)%7+1;
@@ -539,49 +495,95 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j<28&&j>6){// XOOO_ 負斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ 負斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
 				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
-					if(board[j+16]==' '&&(board[j+23]!=' '||j>=21)){
+					if(board[j+16]==' '&&((j<21&&board[j+23]!=' ')||j>=21)){
 						input=(j+16)%7+1;
 						return input;
 					}
 				}
 			}
+		}
+	}
+	
+	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : 判斷是否為最底層 !!
+		for(j=i;j<=(i+35);j=j+7){
 			
-			//printf("\nj is %d:%c\n",j,board[j]);
+			if(i>=1&&i<=4){// XOOO_ 
+				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
+					if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){
+						input=(j+2)%7+1;
+						return input;
+					}
+				}
+			}
+			if(i>=2&&i<=5){// _OOOX 
+				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
+					if(board[j-2]==' '&&((j<35&&board[j+5]!=' ')||j>=35)){
+						input=(j-2)%7+1;
+						return input;
+					}
+				}
+			}
+		
 			
-			if(board[j]!=' '&&board[j]==board[j-6]){// _OO_ 正斜率
+			//checking horizontal is two or not
+			if(board[j]!=' '&&board[j]==board[j+1]&&board[j-1]==' '&&board[j+2]==' '){// _OO_
+				if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){// XOO_ 
+					input=(j+2)%7+1;
+					return input;
+				}
+				
+				if(board[j-1]==' '&&((j<35&&board[j+6]!=' ')||j>=35)){// _OOX
+					input=(j-1)%7+1;
+					return input;
+				}
+			}
+			
+			if(board[j-1]!=' '&&board[j+1]==board[j-1]&&board[j-2]==' '&&board[j+2]==' '){// _O_O_
+				if(board[j]==' '&&((j<35&&board[j+7]!=' ')||j>=35)){
+					input=j%7+1;
+					return input;
+				}
+			}
+		}
+	}
+	
+	for(i=1;i<=5;i++){//checking tilted is two or not
+		for(j=i+7;j<=(i+28);j=j+7){
+			
+			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ 正斜率
 				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ 正斜率
 					input=(j-12)%7+1;
 					return input;
 				}
 				
-				if(i>=2&&i<=5&&board[j+6]==' '&&(board[j+13]!=' '||j>=28)){// _OOX 正斜率
+				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX 正斜率
 					input=(j+6)%7+1;
 					return input;
 				}
 			}
 			
-			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35){// _O_O_ 正斜率
+			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ 正斜率
 				if(board[j]==' '&&board[j+7]!=' '){
 					input=j%7+1;
 					return input;
 				}
 			}
 			
-			if(board[j]!=' '&&board[j]==board[j-8]){// _OO_ 負斜率
+			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ 負斜率
 				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX 負斜率
 					input=(j-16)%7+1;
 					return input;
 				}
 				
-				if(j<35&&board[j+8]==' '&&(board[j+15]!=' '||j>=28)){// XOO_ 負斜率
+				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ 負斜率
 					input=(j+8)%7+1;
 					return input;
 				}
 			}
 			
-			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35){// _O_O_ 負斜率
+			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ 負斜率
 				if(board[j]==' '&&board[j+7]!=' '){
 					input=j%7+1;
 					return input;
@@ -595,7 +597,7 @@ int robotInputChess(char *board){
 		return input;
 	}
 	else if(board[3]!=' '){
-		for(i=4;i!=6;i++){//往中間下 
+		for(i=4;i!=7;i++){//往中間下 
 	
 			if(board[i]==' '){
 				input=i+1;
