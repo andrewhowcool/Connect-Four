@@ -1,6 +1,6 @@
 # Connect-Four
 
-  Hi, this is my final project in C Programming course in Spring, 2016.
+  Hi, this is my final project in C Programming course in NSYSU in Spring, 2016.
   Because Google Alphago just became the new world champion,
   so my partner and I decided to writed a simple classic game : Connect Four,
   and build an AI in order to to defeat human!
