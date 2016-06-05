@@ -7,6 +7,7 @@
 #define COL 7
 #define SIZE 3
 
+int robotCheckWin(char *board,int bottom);
 int robotInputChess(char *board);
 void robotTakeTurn(int round, char *board, char *player);
 int inputChess(void);
@@ -202,7 +203,7 @@ void takeTurn(int round, char *board, char *player){
 		}
 		//system("pause");
 	
-	}while(position==-1);//若沒有輸入行數則輪到下個玩家 
+	}while(position==-1);//­Y¨S¦³¿é¤J¦æ¼Æ«h½ü¨ì¤U­Óª±®a 
 	
 	
 	if(position > 0){
@@ -347,20 +348,20 @@ int loadFile(char *board, int round){
 	}
 } 
 
-int inputChess(void){//倒數計時 
-	int sec;//剩餘秒數 
-	int position=-1;//輸入第幾行(1~7) 
-	char input=-1;//輸入字元 
+int inputChess(void){//­Ë¼Æ­p®É 
+	int sec;//³Ñ¾l¬í¼Æ 
+	int position=-1;//¿é¤J²Ä´X¦æ(1~7) 
+	char input=-1;//¿é¤J¦r¤¸ 
     
-    for(sec=10;sec>0;sec--){//每秒印出剩餘秒數 
+    for(sec=10;sec>0;sec--){//¨C¬í¦L¥X³Ñ¾l¬í¼Æ 
     	Sleep(1000);
-    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//紅字 
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//¬õ¦r 
     	printf("%d  ",sec);
-    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//白字 
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//¥Õ¦r 
     	
-    	if (kbhit()){//判定是否有輸入字元 
+    	if (kbhit()){//§P©w¬O§_¦³¿é¤J¦r¤¸ 
     		input=getche();
-    		break;//若有，則停止倒數 
+    		break;//­Y¦³¡A«h°±¤î­Ë¼Æ 
 		}
 	}
 
@@ -368,11 +369,11 @@ int inputChess(void){//倒數計時
 	if(input==-1){
 		printf("\nThe time is up\n");
     	printf("Take turn!!\n\n");
-		return position;//若沒輸入行數，則傳回-1
+		return position;//­Y¨S¿é¤J¦æ¼Æ¡A«h¶Ç¦^-1
 	}
 	else if(input!=-1){
-		position=input-48;//將char轉換為int 
-		return position;//將行數回傳 
+		position=input-48;//±NcharÂà´«¬°int 
+		return position;//±N¦æ¼Æ¦^¶Ç 
 	}
 	
 	
@@ -445,7 +446,7 @@ void robotTakeTurn(int round, char *board, char *player){
 			printWiningBoard(board);
 			if(round%2==1){
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
-				printf("Robot (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
+				printf("Robot  Wins!\n\n\n", player[round % 2]); //win
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 			}		
 		}
@@ -457,12 +458,14 @@ void robotTakeTurn(int round, char *board, char *player){
 }
 
 int robotInputChess(char *board){
-	int i=0,j=0,k=1,input;
+	int i=0,j=0,k=2;
+	int bottom,input;
 	
 	for(i=0;i<=6;i++){//checking vertical is three or not 
 		for(j=i+7;j<=(i+21);j=j+7){
 			if(board[j]!=' '&&board[j]==board[j+7]&&board[j+7]==board[j+14]&&board[j-7]==' '){
 				input=j%7+1;
+				printf("a");//test
 				return input;
 			}
 		}
@@ -470,35 +473,74 @@ int robotInputChess(char *board){
 	
 	for(i=1;i<=5;i++){//checking tilted is three or not
 		for(j=i+7;j<=(i+28);j=j+7){
-			if(i>=1&&i<=4&&j>13){// XOOO_ 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=4&&j>13&&j<35){// XOOO_ ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j-12]==' '&&board[j-5]!=' '){
 						input=(j-12)%7+1;
+						printf("b");//test
 						return input;
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX 正斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX ¥¿±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j+12]==' '&&((j<21&&board[j+19]!=' ')||j>=21)){
 						input=(j+12)%7+1;
+						printf("c");//test
 						return input;
 					}
 				}
 			}
-			
-			if(i>=2&&i<=5&&j>13){// _OOOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j+6]&&board[j]==board[j-12]){
+					if(board[j-6]==' '&&board[j+1]!=' '){
+						input=(j-6)%7+1;
+						printf("d");//test
+						return input;
+					}
+				}
+			}
+			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j+6]&&board[j]==board[j-12]){
+					if(board[j+6]==' '&&board[j+13]!=' '){
+						input=(j-6)%7+1;
+						printf("e");//test
+						return input;
+					}
+				}
+			}
+			if(i>=2&&i<=5&&j>13){// _OOOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j-16]==' '&&board[j-9]!=' '){
 						input=(j-16)%7+1;
+						printf("f");//test
 						return input;
 					}
 				}
 			}
-			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ 負斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ ­t±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j+16]==' '&&((j<21&&board[j+23]!=' ')||j>=21)){
 						input=(j+16)%7+1;
+						printf("g");//test
+						return input;
+					}
+				}
+			}
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+16]){
+					if(board[j+8]==' '&&board[j+15]!=' '){
+						input=(j+15)%7+1;
+						printf("h");//test
+						return input;
+					}
+				}
+			}
+			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j+8]&&board[j]==board[j-16]){
+					if(board[j-8]==' '&&board[j-1]!=' '){
+						input=(j-8)%7+1;
+						printf("i");//test
 						return input;
 					}
 				}
@@ -506,13 +548,14 @@ int robotInputChess(char *board){
 		}
 	}
 	
-	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : 判斷是否為最底層 !!
+	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : §PÂ_¬O§_¬°³Ì©³¼h !!
 		for(j=i;j<=(i+35);j=j+7){
 			
 			if(i>=1&&i<=4){// XOOO_ 
 				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
 					if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){
 						input=(j+2)%7+1;
+						printf("j");//test
 						return input;
 					}
 				}
@@ -521,21 +564,41 @@ int robotInputChess(char *board){
 				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
 					if(board[j-2]==' '&&((j<35&&board[j+5]!=' ')||j>=35)){
 						input=(j-2)%7+1;
+						printf("k");//test
 						return input;
 					}
 				}
 			}
-		
+			if(i>=1&&i<=5){// XOO_OX 
+				if(board[j]!=' '&&board[j]==board[j-1]&&board[j]==board[j+2]){
+					if(board[j+1]==' '&&((j<35&&board[j+8]!=' ')||j>=35)){
+						input=(j+1)%7+1;
+						printf("l");//test
+						return input;
+					}
+				}
+			}
+			if(i>=2&&i<=5){// XO_OOX 
+				if(board[j]!=' '&&board[j]==board[j-2]&&board[j]==board[j+1]){
+					if(board[j-1]==' '&&((j<35&&board[j+6]!=' ')||j>=35)){
+						input=(j-1)%7+1;
+						printf("m");//test
+						return input;
+					}
+				}
+			}
 			
 			//checking horizontal is two or not
 			if(board[j]!=' '&&board[j]==board[j+1]&&board[j-1]==' '&&board[j+2]==' '){// _OO_
 				if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){// XOO_ 
 					input=(j+2)%7+1;
+					printf("n");//test
 					return input;
 				}
 				
 				if(board[j-1]==' '&&((j<35&&board[j+6]!=' ')||j>=35)){// _OOX
 					input=(j-1)%7+1;
+					printf("o");//test
 					return input;
 				}
 			}
@@ -543,6 +606,7 @@ int robotInputChess(char *board){
 			if(board[j-1]!=' '&&board[j+1]==board[j-1]&&board[j-2]==' '&&board[j+2]==' '){// _O_O_
 				if(board[j]==' '&&((j<35&&board[j+7]!=' ')||j>=35)){
 					input=j%7+1;
+					printf("p");//test
 					return input;
 				}
 			}
@@ -552,66 +616,404 @@ int robotInputChess(char *board){
 	for(i=1;i<=5;i++){//checking tilted is two or not
 		for(j=i+7;j<=(i+28);j=j+7){
 			
-			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ 正斜率
-				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ 正斜率
+			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ ¥¿±×²v
+				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ ¥¿±×²v
 					input=(j-12)%7+1;
+					printf("q");//test
 					return input;
 				}
 				
-				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX 正斜率
+				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX ¥¿±×²v
 					input=(j+6)%7+1;
+					printf("r");//test
 					return input;
 				}
 			}
 			
-			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ 正斜率
+			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ ¥¿±×²v
 				if(board[j]==' '&&board[j+7]!=' '){
 					input=j%7+1;
+					printf("s");//test
 					return input;
 				}
 			}
 			
-			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ 負斜率
-				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX 負斜率
+			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ ­t±×²v
+				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX ­t±×²v
 					input=(j-16)%7+1;
+					printf("t");//test
 					return input;
 				}
 				
-				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ 負斜率
+				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ ­t±×²v
 					input=(j+8)%7+1;
+					printf("u");//test
 					return input;
 				}
 			}
 			
-			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ 負斜率
+			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ ­t±×²v
 				if(board[j]==' '&&board[j+7]!=' '){
 					input=j%7+1;
+					printf("v");//test
 					return input;
 				}
 			}
 		}
 	}
 	
-	if(board[3]==' '){//往中間下 
+	if(board[3]==' '){//©¹¤¤¶¡¤U 
 		input=4;
+		for(bottom = input + 34; bottom >= input - 1; bottom -= 7){ //check whether the position in board is blank from bottom
+			if(board[bottom] == ' '){
+				board[bottom] = 'X'; //insert player sign to board						
+				break; //end for loop
+			}
+		}
+		if(robotCheckWin(board,bottom)==0){//¹w§Pª±®a¤U¤@¨B¤£·|Ä¹ 
+			printf("w");//test
+			return input;
+		}
+		
+	}
+	else if(board[3]!=' '){//©¹¥kÃä¤U
+		for(i=4;i!=7;i++){ 
+			if(board[i]==' '){
+				input=i+1;
+				for(bottom = input + 34; bottom >= input - 1; bottom -= 7){ //check whether the position in board is blank from bottom
+					if(board[bottom] == ' '){
+						board[bottom] = 'X'; //insert player sign to board						
+						break; //end for loop
+					}
+				}
+				if(robotCheckWin(board,bottom)==0){//¹w§Pª±®a¤U¤@¨B¤£·|Ä¹ 
+					printf("x");//test
+					return input;
+				}
+			}
+			
+			
+			else if(board[i]!=' '){//¥kÃä¤£¬°ªÅ¡A©¹¥ª¨â¦æ 
+				j=i;
+				j=j-k;
+				if(board[j]==' '){
+					input=j+1;
+					for(bottom = input + 34; bottom >= input - 1; bottom -= 7){ //check whether the position in board is blank from bottom
+						if(board[bottom] == ' '){
+							board[bottom] = 'X'; //insert player sign to board						
+							break; //end for loop
+						}
+					}
+					if(robotCheckWin(board,bottom)==0){//¹w§Pª±®a¤U¤@¨B¤£·|Ä¹ 
+						printf("y");//test
+						return input;
+					}
+				}
+			}
+			k=k+2;//©¹¥ª¥|¦æ©Î¤»¦æ 
+		}	
+	}
+	
+	if(board[3]==' '){//¸U¤@ª±®aÄ¹©w¤F!!!!! 
+		input=4;
+		printf("z");//test
 		return input;
 	}
-	else if(board[3]!=' '){
-		for(i=4;i!=7;i++){//往中間下 
+	else if(board[3]!=' '){//¸U¤@ª±®aÄ¹©w¤F!!!!! 
+		for(i=4;i!=7;i++){//©¹¤¤¶¡¤U 
 	
 			if(board[i]==' '){
 				input=i+1;
+				printf("zz");//test
 				return input;
 			}
 			else if(board[i]!=' '){
 				j=i;
-				j=j-2*k;
+				j=j-k;
 				if(board[j]==' '){
 					input=j+1;
+					printf("zzz");//test
 					return input;
 				}
 			}
-			k++;
+			k=k+2;
 		}	
+	}
+}
+
+int robotCheckWin(char *board,int bottom){
+	int i=0,j=0,k=1,humanWins=0;
+	
+	for(i=0;i<=6;i++){//checking vertical is three or not 
+		for(j=i+7;j<=(i+21);j=j+7){
+			if(board[j]!=' '&&board[j]==board[j+7]&&board[j+7]==board[j+14]&&board[j-7]==' '){
+				if(board[j]=='O'){//check if human will win or not
+					humanWins=1;
+					printf("1");//test
+					board[bottom] = ' '; //´_­ì!!
+					return humanWins;
+				}
+			}
+		}
+	}
+	
+	for(i=1;i<=5;i++){//checking tilted is three or not
+		for(j=i+7;j<=(i+28);j=j+7){
+			if(i>=1&&i<=4&&j>13){// XOOO_ ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
+					if(board[j-12]==' '&&board[j-5]!=' '){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("2");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX ¥¿±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
+				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
+					if(board[j+12]==' '&&((j<21&&board[j+19]!=' ')||j>=21)){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("3");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j+6]&&board[j]==board[j-12]){
+					if(board[j-6]==' '&&board[j+1]!=' '){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("4");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j+6]&&board[j]==board[j-12]){
+					if(board[j+6]==' '&&board[j+13]!=' '){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("5");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=2&&i<=5&&j>13){// _OOOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
+					if(board[j-16]==' '&&board[j-9]!=' '){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("6");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ ­t±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
+				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
+					if(board[j+16]==' '&&((j<21&&board[j+23]!=' ')||j>=21)){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("7");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+16]){
+					if(board[j+8]==' '&&board[j+15]!=' '){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("8");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
+				if(board[j]!=' '&&board[j]==board[j+8]&&board[j]==board[j-16]){
+					if(board[j-8]==' '&&board[j-1]!=' '){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("9");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : §PÂ_¬O§_¬°³Ì©³¼h !!
+		for(j=i;j<=(i+35);j=j+7){
+			
+			if(i>=1&&i<=4){// XOOO_ 
+				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
+					if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("10");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=2&&i<=5){// _OOOX 
+				if(board[j]!=' '&&board[j]==board[j+1]&&board[j]==board[j-1]){
+					if(board[j-2]==' '&&((j<35&&board[j+5]!=' ')||j>=35)){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("11");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=1&&i<=5){// XOO_OX 
+				if(board[j]!=' '&&board[j]==board[j-1]&&board[j]==board[j+2]){
+					if(board[j+1]==' '&&((j<35&&board[j+8]!=' ')||j>=35)){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("12");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			if(i>=2&&i<=5){// XO_OOX 
+				if(board[j]!=' '&&board[j]==board[j-2]&&board[j]==board[j+1]){
+					if(board[j-1]==' '&&((j<35&&board[j+6]!=' ')||j>=35)){
+						if(board[j]=='O'){//check if human will win or not
+							humanWins=1;
+							printf("13");//test
+							board[bottom] = ' '; //´_­ì!!
+							return humanWins;
+						}
+					}
+				}
+			}
+			
+			//checking horizontal is two or not
+			if(board[j]!=' '&&board[j]==board[j+1]&&board[j-1]==' '&&board[j+2]==' '){// _OO_
+				if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){// XOO_ 
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("14");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+				
+				if(board[j-1]==' '&&((j<35&&board[j+6]!=' ')||j>=35)){// _OOX
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("15");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+			}
+			
+			if(board[j-1]!=' '&&board[j+1]==board[j-1]&&board[j-2]==' '&&board[j+2]==' '){// _O_O_
+				if(board[j]==' '&&((j<35&&board[j+7]!=' ')||j>=35)){
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("16");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+			}
+		}
+	}
+	
+	for(i=1;i<=5;i++){//checking tilted is two or not
+		for(j=i+7;j<=(i+28);j=j+7){
+			
+			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ ¥¿±×²v
+				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ ¥¿±×²v
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("17");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+				
+				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX ¥¿±×²v
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("18");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+			}
+			
+			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ ¥¿±×²v
+				if(board[j]==' '&&board[j+7]!=' '){
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("19");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+			}
+			
+			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ ­t±×²v
+				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX ­t±×²v
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("20");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+				
+				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ ­t±×²v
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("21");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+			}
+			
+			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ ­t±×²v
+				if(board[j]==' '&&board[j+7]!=' '){
+					if(board[j]=='O'){//check if human will win or not
+						humanWins=1;
+						printf("22");//test
+						board[bottom] = ' '; //´_­ì!!
+						return humanWins;
+					}
+				}
+			}
+		}
+	}
+	
+	board[bottom] = ' '; //´_­ì!!
+	if(humanWins==0){//if human won't win
+		printf("0\n");//test
+		return humanWins;
 	}
 }
