@@ -254,7 +254,6 @@ bool tieCheck(char *board){
 	for(i = 0; i < COL; ++i){
 		if(board[i] == ' '){
 			tieTest = 0;
-			printf("tieTest = %d\n", tieTest);
 			return tieTest;
 		}
 	}
