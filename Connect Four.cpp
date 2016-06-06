@@ -11,11 +11,11 @@ int robotCheckWin(char *board,int bottom);//檢查電腦下子後下一步人類
 int robotInputChess(char *board);//判斷電腦要下在哪一行，並傳回行數
 bool robotTakeTurn(int round, char *board, char *player);//電腦對戰模式的流程
 int inputChess(void);//人類下棋，包含倒數計時
-int gameMode(char *board, int round);
-void printBoard(char *board);
+int gameMode(char *board, int round); //選擇遊戲模式
+void printBoard(char *board); //印出棋盤
 void printWiningBoard(char *board);//印出有紅色連線的獲勝棋盤
-int takeTurn(int round, char *board, char *player);
-void savingWinnigPos(int a,int b,int c,int d);
+int takeTurn(int round, char *board, char *player); //轉換玩家
+void savingWinnigPos(int a,int b,int c,int d); //存連線四子的位置
 bool checkWin(int insertPos, char *board);
 bool checkFour(char *board, int a, int b, int c, int d);
 bool checkVertical(int insertPos, char *board);
@@ -26,42 +26,51 @@ void saveFile(char *board);
 int loadFile(char *boar, int round);
 
 
+
 int insertPos = 0; //get final insert position in takeTurn function
 int winningPos[4];//the four winning position
 int position; //user enter number
 int playMode;
 
 int main(void){
-	char board[ROW * COL];
+	char board[ROW * COL];  //初始棋盤格數
 	char player[SIZE] = "OX"; //player's sign
 	int round = 2; //first round number
 	int playagain, i, tieTest = 1;
 	
+	/**
+	 * 1.玩家輸入遊戲模式 : 對玩家、對AI；新遊戲、讀取遊戲
+	 * 2.每一步下子後判斷有無輸贏，如果沒有就繼續下
+	 * 如果贏了就跳出下棋迴圈
+	 * 判斷是誰贏了
+	 * 無輸贏則和局
+	**/
+	
 	do{
-		gameMode(board, round);
+		gameMode(board, round); //玩家輸入遊戲模式
 		
 		printBoard(board); //print the first board
 	
 		if(playMode == 1 || playMode == 3){// new game : human VS. human
 		
 			if(playMode == 3){ //load game : human v.s human
-				round = loadFile(board, round);
+				round = loadFile(board, round);//回傳舊遊戲的round，決定換誰下
 			} 
 			
-			takeTurn(round, board, player); 
+			takeTurn(round, board, player); //player 1 先下
 
 			while(checkWin(insertPos, board) != 1 && !tieCheck(board)){ //  win : 1
 				++round; //next round
-				round = takeTurn(round, board, player); //take turn return round, if player spending out time, begin next round
+				round = takeTurn(round, board, player); //如果玩家超過時間就進入下一round
 			}
 			
-			if(checkWin(insertPos, board) == 1 && position != 0){
+			if(checkWin(insertPos, board) == 1 && position != 0){ //獲勝條件
 				printWiningBoard(board);
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
 				printf("Player %d (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 			}
-			if(tieCheck(board)){
+			if(tieCheck(board)){ //和局
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);
 				printf("Tie ! \n\n\n");
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
@@ -74,12 +83,12 @@ int main(void){
 				round = loadFile(board, round);
 			}
 			
-			robotTakeTurn(round, board, player);
+			robotTakeTurn(round, board, player); 
 			
 			while(checkWin(insertPos, board) != 1){ //  win : 1
 		
 				if(robotTakeTurn(round, board, player)){
-					break;                                 //take turn
+					break; //如果發生和局就停止下棋     
 				}
 			}
 			
@@ -97,7 +106,7 @@ int main(void){
 		
 	}while(playagain == 1);
 	
-	if(position == 0){
+	if(position == 0){ //存檔
 		printf("\nSaving Complete!\n");
 		printf("\nThanks for playing.\n\n\n");
 	}
@@ -202,21 +211,29 @@ void printWiningBoard(char *board){
 	puts("  1   2   3   4   5   6   7\n\n\n");
 }
 
+	/**
+	 * 1.玩家輸入下棋位置1 ~ 7, 0存檔
+	 * 超過時間則直接換下個玩家輸入
+	 * 檢查下棋點能否下棋
+	 * 如果可以從底部開始擺放
+	 * 如果滿格則重新下棋
+	 * */
+
 int takeTurn(int round, char *board, char *player){
 	int bottom, test = 0;
 	
 	do{
 		printf("player %d (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", round % 2 + 1, player[round % 2]); //player one go first
-		position = inputChess();
+		position = inputChess(); //玩家輸入位置並開始計秒
 		if(position == -1){
-			round++;
+			round++; //超過時間沒下換下一round
 		}
-		//system("pause");
+
 	
-	}while(position == -1);//-Y‥S|3?e?J|a?A?h?u‥i?U-Oa±Ra 
+	}while(position == -1);//下round玩家輸入
 	
 	
-	if(position > 0){
+	if(position > 0){ //確認輸入值
 		while(test == 0){  //check whether insertion is complete, if complete, test = 1
 			for(bottom = position + 34; bottom >= position - 1; bottom -= 7){ //check whether the position in board is blank from bottom
 				if(board[bottom] == ' '){
@@ -227,10 +244,10 @@ int takeTurn(int round, char *board, char *player){
 					
 					break; //end for loop
 				}
-			else if(bottom == position - 1 && board[bottom] != ' '){ //column full, insertion fail, test = 0
+			else if(bottom == position - 1 && board[bottom] != ' '){ //欄的最頂部已滿
 				printf("\n");
 				printf("Column full! Enter other column.\n");
-				position = inputChess();
+				position = inputChess(); //滿格重下
 				}
 			}
 		}
@@ -262,7 +279,7 @@ bool tieCheck(char *board){
 
 bool checkWin(int insertPos, char *board){
 	if(checkVertical(insertPos, board) || checkHorizontal(insertPos, board) || checkTilted(insertPos, board) || position == 0){
-		return 1;
+		return 1; //直、橫、斜線任一滿足四子就算贏
 	}
 	else{
 		return 0;
@@ -272,14 +289,14 @@ bool checkWin(int insertPos, char *board){
 bool checkFour(char *board, int a, int b, int c, int d){
 	if(board[a] == board[b] && board[b] == board[c] && board[c] == board[d] 
 		&& d < COL * ROW && d >= 0 && a >= 0 && a < COL * ROW && board[a] != ' '){ // a:start, d:end must between 0 ~ 41
-		return 1;
+		return 1; //檢查相同四子
 	}
 	else{
 		return 0;
 	}
 }
 
-bool checkVertical(int insertPos, char *board){
+bool checkVertical(int insertPos, char *board){ //檢查垂直線
 	int start, add, i = 1, j = 1;
 	
 	for(start = 0; i <= 3; start += 7, ++i){
