@@ -1,19 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <windows.h>
-#include <conio.h>
+#include <windows.h>//sleep
+#include <conio.h>//kbhit
 #define ROW 6 //define board
 #define COL 7
 #define SIZE 3
 
-int robotCheckWin(char *board,int bottom);
-int robotInputChess(char *board);
-bool robotTakeTurn(int round, char *board, char *player);
-int inputChess(void);
+int robotCheckWin(char *board,int bottom);//檢查電腦下子後下一步人類會不會贏，如果會贏就傳回 1
+int robotInputChess(char *board);//判斷電腦要下在哪一行，並傳回行數
+bool robotTakeTurn(int round, char *board, char *player);//電腦對戰模式的流程
+int inputChess(void);//人類下棋，包含倒數計時
 int gameMode(char *board, int round);
 void printBoard(char *board);
-void printWiningBoard(char *board);
+void printWiningBoard(char *board);//印出有紅色連線的獲勝棋盤
 int takeTurn(int round, char *board, char *player);
 void savingWinnigPos(int a,int b,int c,int d);
 bool checkWin(int insertPos, char *board);
@@ -904,10 +904,11 @@ int robotInputChess(char *board){
 	}
 }
 
-int robotCheckWin(char *board,int input){
+int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類會不會贏
 	int i=0,j=0,k=1;
 	int bottom,humanWins=0;
 	
+	//假設電腦下子
 	for(bottom = input + 34; bottom >= input - 1; bottom -= 7){ //check whether the position in board is blank from bottom
 		if(board[bottom] == ' '){
 			board[bottom] = 'X'; //insert player sign to board						
@@ -915,6 +916,7 @@ int robotCheckWin(char *board,int input){
 		}
 	}
 	
+	//開始進行檢查
 	for(i=0;i<=6;i++){//checking vertical is three or not 
 		for(j=i+7;j<=(i+21);j=j+7){
 			if(board[j]!=' '&&board[j]==board[j+7]&&board[j+7]==board[j+14]&&board[j-7]==' '){
@@ -1182,6 +1184,7 @@ int robotCheckWin(char *board,int input){
 		}
 	}
 	
+	//若人類不會贏，則傳回 0
 	board[bottom] = ' '; //復原!!
 	if(humanWins==0){//if human won't win
 		printf("0\n");//test
