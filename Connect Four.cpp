@@ -761,7 +761,7 @@ int robotInputChess(char *board){
 			
 			//檢查玩家或電腦是否有機會三子連線 
 			//checking horizontal is two or not
-			if(board[j]!=' '&&board[j]==board[j+1]&&board[j-1]==' '&&board[j+2]==' '&&((j<35&&board[j+6]!=' '&&board[j+9]!=' ')||(j<35))){// _OO_
+			if(board[j]!=' '&&board[j]==board[j+1]&&board[j-1]==' '&&board[j+2]==' '&&((j<35&&board[j+6]!=' '&&board[j+9]!=' ')||(j>=35))){// _OO_
 				if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){// XOO_ 
 					input=(j+2)%7+1;
 					printf("A");//test
@@ -775,7 +775,7 @@ int robotInputChess(char *board){
 				}
 			}
 			
-			if(board[j-1]!=' '&&board[j+1]==board[j-1]&&board[j-2]==' '&&board[j+2]==' '&&((j<35&&board[j+6]!=' '&&board[j+8]!=' ')||(j<35))){// _O_O_
+			if(board[j-1]!=' '&&board[j+1]==board[j-1]&&board[j-2]==' '&&board[j+2]==' '&&((j<35&&board[j+6]!=' '&&board[j+8]!=' ')||(j>=35))){// _O_O_
 				if(board[j]==' '&&((j<35&&board[j+7]!=' ')||j>=35)){
 					input=j%7+1;
 					printf("C");//test
