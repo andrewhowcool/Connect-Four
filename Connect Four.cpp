@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <windows.h>//sleep
 #include <conio.h>//kbhit
+#include <unistd.h>
 #define ROW 6 //define board
 #define COL 7
 #define SIZE 3
+ 
 
 int robotCheckWin(char *board,int bottom);//檢查電腦下子後下一步人類會不會贏，如果會贏就傳回 1
 int robotInputChess(char *board);//判斷電腦要下在哪一行，並傳回行數
@@ -413,23 +415,33 @@ int loadFile(char *board, int round){
 	int i = 0, count = 0;
 	FILE *file;
 	
-	file = fopen("record.txt", "r");
+	if(access("record.txt", R_OK) != -1){ //check the file is exist
+		file = fopen("record.txt", "r");
 	
-	while((fscanf(file,"%c",&board[i])) != EOF) //scanf and check EOF
-        {
-            i++;
-        }
-        
-    fclose(file);
-    
-    for(i = 0; i < COL*ROW; ++i){
-    	if(board[i] != ' '){
-    		count++;
+		while((fscanf(file,"%c",&board[i])) != EOF) //scanf and check EOF
+	        {
+	            i++;
+	        }
+	        
+	    fclose(file);
+	    
+	    for(i = 0; i < COL*ROW; ++i){
+	    	if(board[i] != ' '){
+	    		count++;
+			}
+		}
+		if(count % 2 == 1 || count == 1){
+			return 3; //player two play
 		}
 	}
-	if(count % 2 == 1 || count == 1){
-		return 3; //player two play
+	else{
+		printf("%37c", blank);
+		printf("Record Not Found. New Game Start !\n\n");
+		memset(board,' ', ROW * COL);
+		return 2;
 	}
+	
+	
 } 
 
 int inputChess(void){//倒數計時 
