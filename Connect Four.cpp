@@ -24,6 +24,7 @@ bool checkTilted(int insertPos, char *board);
 bool tieCheck(char *board);
 void saveFile(char *board);
 int loadFile(char *boar, int round);
+void animation(char *board, int insertPos, int position);
 
 
 
@@ -31,6 +32,7 @@ int insertPos = 0; //get final insert position in takeTurn function
 int winningPos[4];//the four winning position
 int position; //user enter number
 int playMode;
+char blank = ' ';
 
 int main(void){
 	char board[ROW * COL];  //初始棋盤格數
@@ -69,11 +71,13 @@ int main(void){
 				system("CLS");
 				printWiningBoard(board);
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
+				printf("%45c", blank);
 				printf("Player %d (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 			}
 			if(tieCheck(board)){ //和局
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);
+				printf("%45c", blank);
 				printf("Tie ! \n\n\n");
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 			}
@@ -96,12 +100,15 @@ int main(void){
 			
 			if(tieCheck(board)){
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);
+				printf("%45c", blank);
 				printf("Tie ! \n\n\n");
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 			}
 		}
 		if(position != 0){
+			printf("%40c", blank);
 			printf("Enter (1) to play again\n");
+			printf("%40c", blank);
 			printf("Enter (0) to end the game\n");
 			scanf("%d",&playagain);
 		}
@@ -109,11 +116,13 @@ int main(void){
 	}while(playagain == 1);
 	
 	if(position == 0){ //存檔
-		printf("\nSaving Complete!\n");
-		printf("\nThanks for playing.\n\n\n");
+		printf("\n%45c", blank);
+		printf("Saving Complete!\n");
+		printf("\n%45c", blank);
+		printf("Thanks for playing.\n\n\n");
 	}
 	else{
-		printf("\nThanks for playing.\n\n\n");
+		printf("\n%43c Thanks for playing.\n\n\n", blank);
 	}
 	
 	
@@ -124,15 +133,19 @@ int main(void){
 int gameMode(char *board, int round){
 	int gameMode, newMode;
 	
-	printf("Human VS. Human: 1\nHuman VS. Robot: 2\n");
+	printf("%45c", blank);
+	printf("Human VS. Human: 1\n %43c Human VS. Robot: 2\n", blank);
+
 	scanf("%d", &gameMode);
 	
 	while(gameMode != 1 && gameMode != 2 ){
+		printf("%45c", blank);
 		printf("Enter 1 or 2 \n");
 		scanf("%d", &gameMode);
 	}
-	
-	printf("New Game : 1 \nLoad Game : 2\n");
+	system("CLS");
+	printf("%45c", blank);
+	printf("New Game : 1 \n %43c Load Game : 2\n", blank);
 	scanf("%d", &newMode);
 	
 	while(newMode != 1 && newMode != 2 ){
@@ -157,18 +170,36 @@ int gameMode(char *board, int round){
 		return loadFile(board, round);
 	}
 }
+void animation(char *board, int insertPos, int position){
+	int i, j, tempPos;
+	char temp;
+	
+	temp = board[insertPos];
+	board[insertPos] = ' ';
+	
+	for(i = position - 1; i <= insertPos; i += 7){
+		board[i] = temp;
+		printBoard(board);
+		Sleep(50);
+		board[i] = ' ';
+		
+		system("CLS");
+	}
+	board[insertPos] = temp;
+}
 
 void printBoard(char *board){
-	
 	size_t i;
 	printf("\n");
+	printf("%40c", blank);
 	puts("--------Connect Four---------\n");
-	
+	printf("%40c", blank);
 	for(i = 0; i < ROW * COL; ++i){
 		if(i % COL == 0 && i != 0){  //change line every seven elements in one row
 			printf("|\n");
-
+			printf("%40c", blank);
 			puts("-----------------------------");
+			printf("%40c", blank);
 
 		}
 		if(i == insertPos){
@@ -183,21 +214,23 @@ void printBoard(char *board){
 		
 	}
 	printf("|\n"); //print the last | 
-
+	printf("%40c", blank);
 	puts("-----------------------------");
-
+	printf("%40c", blank);
 	puts("  1   2   3   4   5   6   7\n");
 }
 
 void printWiningBoard(char *board){
 	size_t i;
-	
+	printf("%40c", blank);
 	puts("--------Connect Four---------\n");
-	
+	printf("%40c", blank);
 	for(i = 0; i < ROW * COL; ++i){
 		if(i % COL == 0 && i != 0){  //change line every seven elements in one row
 			printf("|\n");
+			printf("%40c", blank);
 			puts("-----------------------------");
+			printf("%40c", blank);
 		}
 		
 		if(i==winningPos[0]||i==winningPos[1]||i==winningPos[2]||i==winningPos[3]){
@@ -213,8 +246,10 @@ void printWiningBoard(char *board){
 		
 	}
 	printf("|\n"); //print the last | 
+	printf("%40c", blank);
 	puts("-----------------------------");
-	puts("  1   2   3   4   5   6   7\n\n\n");
+	printf("%40c", blank);
+	puts("  1   2   3   4   5   6   7\n\n");
 }
 
 	/**
@@ -229,6 +264,7 @@ int takeTurn(int round, char *board, char *player){
 	int bottom, test = 0;
 	
 	do{
+		printf("%30c", blank);
 		printf("player %d (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", round % 2 + 1, player[round % 2]); //player one go first
 		position = inputChess(); //玩家輸入位置並開始計秒
 		if(position == -1){
@@ -247,6 +283,7 @@ int takeTurn(int round, char *board, char *player){
 					test = 1; //insert complete
 					insertPos = bottom; //get final insert position store in global variable
 					system("CLS"); //clear screen
+					animation(board, insertPos, position);
 					printBoard(board); //print new board
 					
 					break; //end for loop
@@ -399,7 +436,7 @@ int inputChess(void){//倒數計時
 	int sec;//剩餘秒數 
 	int position=-1;//輸入第幾行(1~7)  
 	char input=-1;//輸入字元  
-    
+    printf("%30c", blank);
     for(sec=10;sec>0;sec--){//每秒印出剩餘秒數 
     	Sleep(1000);
     	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//紅色 
@@ -409,6 +446,7 @@ int inputChess(void){//倒數計時
     	if (kbhit()){//判定是否有輸入字元 
 			input=getche();
 			while(input<48||input>55){
+				printf("%45c", blank);
     			printf("\nERROR, enter1~7 or 0 to save the file\n");
     			input=getche();
     			if(input>=48&&input<=55){
@@ -439,6 +477,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 	int bottom, test = 0, i, tieTest = 1;
 	
 	//human move
+	printf("%30c", blank);
 	printf("player (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", player[round % 2]); //player go first
 	position = inputChess(); 
 	
@@ -451,12 +490,14 @@ bool robotTakeTurn(int round, char *board, char *player){
 					test = 1; //insert complete
 					insertPos = bottom; //get final insert position store in global variable
 					system("CLS"); //clear screen
+					animation(board, insertPos, position);
 					printBoard(board); //print new board
 					
 					break; //end for loop
 				}
 				else if(bottom == position - 1 && board[bottom] != ' '){ //column full, insertion fail, test = 0
 					printf("\n");
+					printf("%45c", blank);
 					printf("Column full! Enter other column.\n");
 					position = inputChess();
 					}
@@ -472,6 +513,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 		printWiningBoard(board);
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
+		printf("%45c", blank);
 		printf("Player 1 (O) Wins!\n\n\n"); //win
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 		}
@@ -493,6 +535,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 						test = 1; //insert complete
 						insertPos = bottom; //get final insert position store in global variable
 						system("CLS");
+						animation(board, insertPos, position);
 						printBoard(board); //print new board
 						
 						break; //end for loop
@@ -506,6 +549,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 			printWiningBoard(board);
 			{
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
+				printf("%45c", blank);
 				printf("Robot (X)  Wins!\n\n\n"); //win
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 			}		
@@ -1219,3 +1263,4 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 		return humanWins;
 	}
 }
+
