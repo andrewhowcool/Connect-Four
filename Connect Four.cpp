@@ -47,6 +47,7 @@ int main(void){
 	**/
 	
 	do{
+		system("CLS");
 		gameMode(board, round); //玩家輸入遊戲模式
 		
 		printBoard(board); //print the first board
@@ -65,6 +66,7 @@ int main(void){
 			}
 			
 			if(checkWin(insertPos, board) == 1 && position != 0){ //獲勝條件
+				system("CLS");
 				printWiningBoard(board);
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
 				printf("Player %d (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
@@ -240,6 +242,7 @@ int takeTurn(int round, char *board, char *player){
 					board[bottom] = player[round % 2]; //insert player sign to board
 					test = 1; //insert complete
 					insertPos = bottom; //get final insert position store in global variable
+					system("CLS"); //clear screen
 					printBoard(board); //print new board
 					
 					break; //end for loop
@@ -443,6 +446,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 					board[bottom] = player[round % 2]; //insert player sign to board
 					test = 1; //insert complete
 					insertPos = bottom; //get final insert position store in global variable
+					system("CLS"); //clear screen
 					printBoard(board); //print new board
 					
 					break; //end for loop
@@ -460,6 +464,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 	}
 	
 	if(checkWin(insertPos, board) == 1 && position != 0){//if human wins
+		system("CLS");
 		printWiningBoard(board);
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
@@ -483,6 +488,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 						board[bottom] = player[round % 2]; //insert player sign to board
 						test = 1; //insert complete
 						insertPos = bottom; //get final insert position store in global variable
+						system("CLS");
 						printBoard(board); //print new board
 						
 						break; //end for loop
@@ -492,6 +498,7 @@ bool robotTakeTurn(int round, char *board, char *player){
 		}
 	
 		if(checkWin(insertPos, board) == 1 && position != 0){//if robot wins
+			system("CLS");
 			printWiningBoard(board);
 			{
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
