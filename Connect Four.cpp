@@ -7,15 +7,15 @@
 #define COL 7
 #define SIZE 3
 
-int robotCheckWin(char *board,int bottom);//檢查電腦下子後下一步人類會不會贏，如果會贏就傳回 1
-int robotInputChess(char *board);//判斷電腦要下在哪一行，並傳回行數
-bool robotTakeTurn(int round, char *board, char *player);//電腦對戰模式的流程
-int inputChess(void);//人類下棋，包含倒數計時
-int gameMode(char *board, int round); //選擇遊戲模式
-void printBoard(char *board); //印出棋盤
-void printWiningBoard(char *board);//印出有紅色連線的獲勝棋盤
-int takeTurn(int round, char *board, char *player); //轉換玩家
-void savingWinnigPos(int a,int b,int c,int d); //存連線四子的位置
+int robotCheckWin(char *board,int bottom);//ÀË¬d¹q¸£¤U¤l«á¤U¤@¨B¤HÃþ·|¤£·|Ä¹¡A¦pªG·|Ä¹´N¶Ç¦^ 1
+int robotInputChess(char *board);//§PÂ_¹q¸£­n¤U¦b­þ¤@¦æ¡A¨Ã¶Ç¦^¦æ¼Æ
+bool robotTakeTurn(int round, char *board, char *player);//¹q¸£¹ï¾Ô¼Ò¦¡ªº¬yµ{
+int inputChess(void);//¤HÃþ¤U´Ñ¡A¥]§t­Ë¼Æ­p®É
+int gameMode(char *board, int round); //¿ï¾Ü¹CÀ¸¼Ò¦¡
+void printBoard(char *board); //¦L¥X´Ñ½L
+void printWiningBoard(char *board);//¦L¥X¦³¬õ¦â³s½uªºÀò³Ó´Ñ½L
+int takeTurn(int round, char *board, char *player); //Âà´«ª±®a
+void savingWinnigPos(int a,int b,int c,int d); //¦s³s½u¥|¤lªº¦ì¸m
 bool checkWin(int insertPos, char *board);
 bool checkFour(char *board, int a, int b, int c, int d);
 bool checkVertical(int insertPos, char *board);
@@ -33,46 +33,46 @@ int position; //user enter number
 int playMode;
 
 int main(void){
-	char board[ROW * COL];  //初始棋盤格數
+	char board[ROW * COL];  //ªì©l´Ñ½L®æ¼Æ
 	char player[SIZE] = "OX"; //player's sign
 	int round = 2; //first round number
 	int playagain, i, tieTest = 1;
 	
 	/**
-	 * 1.玩家輸入遊戲模式 : 對玩家、對AI；新遊戲、讀取遊戲
-	 * 2.每一步下子後判斷有無輸贏，如果沒有就繼續下
-	 * 如果贏了就跳出下棋迴圈
-	 * 判斷是誰贏了
-	 * 無輸贏則和局
+	 * 1.ª±®a¿é¤J¹CÀ¸¼Ò¦¡ : ¹ïª±®a¡B¹ïAI¡F·s¹CÀ¸¡BÅª¨ú¹CÀ¸
+	 * 2.¨C¤@¨B¤U¤l«á§PÂ_¦³µL¿éÄ¹¡A¦pªG¨S¦³´NÄ~Äò¤U
+	 * ¦pªGÄ¹¤F´N¸õ¥X¤U´Ñ°j°é
+	 * §PÂ_¬O½ÖÄ¹¤F
+	 * µL¿éÄ¹«h©M§½
 	**/
 	
 	do{
 		system("CLS");
-		gameMode(board, round); //玩家輸入遊戲模式
-		
+		gameMode(board, round); //ª±®a¿é¤J¹CÀ¸¼Ò¦¡
+		system("CLS");
 		printBoard(board); //print the first board
 	
 		if(playMode == 1 || playMode == 3){// new game : human VS. human
 		
 			if(playMode == 3){ //load game : human v.s human
-				round = loadFile(board, round);//回傳舊遊戲的round，決定換誰下
+				round = loadFile(board, round);//¦^¶ÇÂÂ¹CÀ¸ªºround¡A¨M©w´«½Ö¤U
 			} 
 			
-			takeTurn(round, board, player); //player 1 先下
+			takeTurn(round, board, player); //player 1 ¥ý¤U
 
 			while(checkWin(insertPos, board) != 1 && !tieCheck(board)){ //  win : 1
 				++round; //next round
-				round = takeTurn(round, board, player); //如果玩家超過時間就進入下一round
+				round = takeTurn(round, board, player); //¦pªGª±®a¶W¹L®É¶¡´N¶i¤J¤U¤@round
 			}
 			
-			if(checkWin(insertPos, board) == 1 && position != 0){ //獲勝條件
+			if(checkWin(insertPos, board) == 1 && position != 0){ //Àò³Ó±ø¥ó
 				system("CLS");
 				printWiningBoard(board);
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//print red
 				printf("Player %d (%c) Wins!\n\n\n", round % 2 + 1, player[round % 2]); //win
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//print white
 			}
-			if(tieCheck(board)){ //和局
+			if(tieCheck(board)){ //©M§½
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);
 				printf("Tie ! \n\n\n");
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
@@ -90,7 +90,7 @@ int main(void){
 			while(checkWin(insertPos, board) != 1){ //  win : 1
 		
 				if(robotTakeTurn(round, board, player)){
-					break; //如果發生和局就停止下棋     
+					break; //¦pªGµo¥Í©M§½´N°±¤î¤U´Ñ     
 				}
 			}
 			
@@ -108,7 +108,7 @@ int main(void){
 		
 	}while(playagain == 1);
 	
-	if(position == 0){ //存檔
+	if(position == 0){ //¦sÀÉ
 		printf("\nSaving Complete!\n");
 		printf("\nThanks for playing.\n\n\n");
 	}
@@ -161,13 +161,15 @@ int gameMode(char *board, int round){
 void printBoard(char *board){
 	
 	size_t i;
-	
-	puts("\n--------Connect Four---------\n");
+	printf("\n");
+	puts("--------Connect Four---------\n");
 	
 	for(i = 0; i < ROW * COL; ++i){
 		if(i % COL == 0 && i != 0){  //change line every seven elements in one row
 			printf("|\n");
+
 			puts("-----------------------------");
+
 		}
 		if(i == insertPos){
 				printf("|", board[i]);
@@ -181,8 +183,10 @@ void printBoard(char *board){
 		
 	}
 	printf("|\n"); //print the last | 
+
 	puts("-----------------------------");
-	puts("  1   2   3   4   5   6   7\n\n\n");
+
+	puts("  1   2   3   4   5   6   7\n");
 }
 
 void printWiningBoard(char *board){
@@ -214,11 +218,11 @@ void printWiningBoard(char *board){
 }
 
 	/**
-	 * 1.玩家輸入下棋位置1 ~ 7, 0存檔
-	 * 超過時間則直接換下個玩家輸入
-	 * 檢查下棋點能否下棋
-	 * 如果可以從底部開始擺放
-	 * 如果滿格則重新下棋
+	 * 1.ª±®a¿é¤J¤U´Ñ¦ì¸m1 ~ 7, 0¦sÀÉ
+	 * ¶W¹L®É¶¡«hª½±µ´«¤U­Óª±®a¿é¤J
+	 * ÀË¬d¤U´ÑÂI¯à§_¤U´Ñ
+	 * ¦pªG¥i¥H±q©³³¡¶}©lÂ\©ñ
+	 * ¦pªGº¡®æ«h­«·s¤U´Ñ
 	 * */
 
 int takeTurn(int round, char *board, char *player){
@@ -226,16 +230,16 @@ int takeTurn(int round, char *board, char *player){
 	
 	do{
 		printf("player %d (%c) : Enter 1 ~ 7, 0 to Save Current Game\n", round % 2 + 1, player[round % 2]); //player one go first
-		position = inputChess(); //玩家輸入位置並開始計秒
+		position = inputChess(); //ª±®a¿é¤J¦ì¸m¨Ã¶}©l­p¬í
 		if(position == -1){
-			round++; //超過時間沒下換下一round
+			round++; //¶W¹L®É¶¡¨S¤U´«¤U¤@round
 		}
 
 	
-	}while(position == -1);//下round玩家輸入
+	}while(position == -1);//¤Uroundª±®a¿é¤J
 	
 	
-	if(position > 0){ //確認輸入值
+	if(position > 0){ //½T»{¿é¤J­È
 		while(test == 0){  //check whether insertion is complete, if complete, test = 1
 			for(bottom = position + 34; bottom >= position - 1; bottom -= 7){ //check whether the position in board is blank from bottom
 				if(board[bottom] == ' '){
@@ -247,10 +251,10 @@ int takeTurn(int round, char *board, char *player){
 					
 					break; //end for loop
 				}
-			else if(bottom == position - 1 && board[bottom] != ' '){ //欄的最頂部已滿
+			else if(bottom == position - 1 && board[bottom] != ' '){ //Äæªº³Ì³»³¡¤wº¡
 				printf("\n");
 				printf("Column full! Enter other column.\n");
-				position = inputChess(); //滿格重下
+				position = inputChess(); //º¡®æ­«¤U
 				}
 			}
 		}
@@ -282,7 +286,7 @@ bool tieCheck(char *board){
 
 bool checkWin(int insertPos, char *board){
 	if(checkVertical(insertPos, board) || checkHorizontal(insertPos, board) || checkTilted(insertPos, board) || position == 0){
-		return 1; //直、橫、斜線任一滿足四子就算贏
+		return 1; //ª½¡B¾î¡B±×½u¥ô¤@º¡¨¬¥|¤l´NºâÄ¹
 	}
 	else{
 		return 0;
@@ -292,14 +296,14 @@ bool checkWin(int insertPos, char *board){
 bool checkFour(char *board, int a, int b, int c, int d){
 	if(board[a] == board[b] && board[b] == board[c] && board[c] == board[d] 
 		&& d < COL * ROW && d >= 0 && a >= 0 && a < COL * ROW && board[a] != ' '){ // a:start, d:end must between 0 ~ 41
-		return 1; //檢查相同四子
+		return 1; //ÀË¬d¬Û¦P¥|¤l
 	}
 	else{
 		return 0;
 	}
 }
 
-bool checkVertical(int insertPos, char *board){ //檢查垂直線
+bool checkVertical(int insertPos, char *board){ //ÀË¬d««ª½½u
 	int start, add, i = 1, j = 1;
 	
 	for(start = 0; i <= 3; start += 7, ++i){
@@ -391,28 +395,28 @@ int loadFile(char *board, int round){
 	}
 } 
 
-int inputChess(void){//倒數計時 
-	int sec;//剩餘秒數 
-	int position=-1;//輸入第幾行(1~7)  
-	char input=-1;//輸入字元  
+int inputChess(void){//­Ë¼Æ­p®É 
+	int sec;//³Ñ¾l¬í¼Æ 
+	int position=-1;//¿é¤J²Ä´X¦æ(1~7)  
+	char input=-1;//¿é¤J¦r¤¸  
     
-    for(sec=10;sec>0;sec--){//每秒印出剩餘秒數 
+    for(sec=10;sec>0;sec--){//¨C¬í¦L¥X³Ñ¾l¬í¼Æ 
     	Sleep(1000);
-    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//紅色 
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED);//¬õ¦â 
     	printf("%d  ",sec);
-    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//白色
+    	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);//¥Õ¦â
     	
-    	if (kbhit()){//判定是否有輸入字元 
+    	if (kbhit()){//§P©w¬O§_¦³¿é¤J¦r¤¸ 
 			input=getche();
 			while(input<48||input>55){
     			printf("\nERROR, enter1~7 or 0 to save the file\n");
     			input=getche();
     			if(input>=48&&input<=55){
-    				break;//若有，則停止倒數
+    				break;//­Y¦³¡A«h°±¤î­Ë¼Æ
 				}
 			} 
 			if(input >= 48 && input<=55){
-    			break;//若有，則停止倒數
+    			break;//­Y¦³¡A«h°±¤î­Ë¼Æ
 			}
 		}
 	}
@@ -421,11 +425,11 @@ int inputChess(void){//倒數計時
 	if(input==-1){
 		printf("\nThe time is up\n");
     	printf("Take turn!!\n\n");
-		return position;//若沒輸入行數，則傳回-1
+		return position;//­Y¨S¿é¤J¦æ¼Æ¡A«h¶Ç¦^-1
 	}
 	else if(input!=-1){
-		position=input-48;//將char轉換為int 
-		return position;//將行數回傳 
+		position=input-48;//±NcharÂà´«¬°int 
+		return position;//±N¦æ¼Æ¦^¶Ç 
 	}
 	
 	
@@ -515,16 +519,16 @@ int robotInputChess(char *board){
 	int bottom,input;
 	
 	/*
-		判定順序：
-		1.判定電腦是否有立即贏的機會(3子連成4子) 
-		2.判定玩家有沒有立即贏的威脅(3子連成4子) 
-		3.判定電腦或玩家有沒有機會變成有利的局面(2子連成3子) 
-		4.若都沒有以上的情況，隨機下棋(不做球給玩家的前提下)
-		5.無論如何電腦都輸定了，由左到右找到空的一行便下子 
+		§P©w¶¶§Ç¡G
+		1.§P©w¹q¸£¬O§_¦³¥ß§YÄ¹ªº¾÷·|(3¤l³s¦¨4¤l) 
+		2.§P©wª±®a¦³¨S¦³¥ß§YÄ¹ªº«Â¯Ù(3¤l³s¦¨4¤l) 
+		3.§P©w¹q¸£©Îª±®a¦³¨S¦³¾÷·|ÅÜ¦¨¦³§Qªº§½­±(2¤l³s¦¨3¤l) 
+		4.­Y³£¨S¦³¥H¤Wªº±¡ªp¡AÀH¾÷¤U´Ñ(¤£°µ²yµ¹ª±®aªº«e´£¤U)
+		5.µL½×¦p¦ó¹q¸£³£¿é©w¤F¡A¥Ñ¥ª¨ì¥k§ä¨ìªÅªº¤@¦æ«K¤U¤l 
 	*/
 	
 	
-	//檢查電腦(X)有沒有立即贏的機會 
+	//ÀË¬d¹q¸£(X)¦³¨S¦³¥ß§YÄ¹ªº¾÷·| 
 	for(i=0;i<=6;i++){//checking vertical is three or not 
 		for(j=i+7;j<=(i+21);j=j+7){
 			if(board[j]=='X'&&board[j]==board[j+7]&&board[j+7]==board[j+14]&&board[j-7]==' '){
@@ -537,7 +541,7 @@ int robotInputChess(char *board){
 	
 	for(i=1;i<=5;i++){//checking tilted is three or not
 		for(j=i+7;j<=(i+28);j=j+7){
-			if(i>=1&&i<=4&&j>13&&j<35){// XOOO_ 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=4&&j>13&&j<35){// XOOO_ ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='X'&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j-12]==' '&&board[j-5]!=' '){
 						input=(j-12)%7+1;
@@ -546,7 +550,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX 正斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX ¥¿±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]=='X'&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j+12]==' '&&((j<21&&board[j+19]!=' ')||j>=21)){
 						input=(j+12)%7+1;
@@ -555,7 +559,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='X'&&board[j]==board[j+6]&&board[j]==board[j-12]){
 					if(board[j-6]==' '&&board[j+1]!=' '){
 						input=(j-6)%7+1;
@@ -564,7 +568,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='X'&&board[j]==board[j+6]&&board[j]==board[j-12]){
 					if(board[j+6]==' '&&board[j+13]!=' '){
 						input=(j-6)%7+1;
@@ -573,7 +577,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j>13){// _OOOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=2&&i<=5&&j>13){// _OOOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='X'&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j-16]==' '&&board[j-9]!=' '){
 						input=(j-16)%7+1;
@@ -582,7 +586,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ 負斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ ­t±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]=='X'&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j+16]==' '&&((j<21&&board[j+23]!=' ')||j>=21)){
 						input=(j+16)%7+1;
@@ -591,7 +595,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX 負斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='X'&&board[j]==board[j-8]&&board[j]==board[j+16]){
 					if(board[j+8]==' '&&board[j+15]!=' '){
 						input=(j+15)%7+1;
@@ -600,7 +604,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='X'&&board[j]==board[j+8]&&board[j]==board[j-16]){
 					if(board[j-8]==' '&&board[j-1]!=' '){
 						input=(j-8)%7+1;
@@ -612,7 +616,7 @@ int robotInputChess(char *board){
 		}
 	}
 	
-	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : 判斷是否為最底層 !!
+	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : §PÂ_¬O§_¬°³Ì©³¼h !!
 		for(j=i;j<=(i+35);j=j+7){
 			
 			if(i>=1&&i<=4){// XOOO_ 
@@ -655,7 +659,7 @@ int robotInputChess(char *board){
 	}
 	
 	
-	//檢查玩家(O)有沒有立即贏的威脅 
+	//ÀË¬dª±®a(O)¦³¨S¦³¥ß§YÄ¹ªº«Â¯Ù 
 	for(i=0;i<=6;i++){//checking vertical is three or not 
 		for(j=i+7;j<=(i+21);j=j+7){
 			if(board[j]=='O'&&board[j]==board[j+7]&&board[j+7]==board[j+14]&&board[j-7]==' '){
@@ -668,7 +672,7 @@ int robotInputChess(char *board){
 	
 	for(i=1;i<=5;i++){//checking tilted is three or not
 		for(j=i+7;j<=(i+28);j=j+7){
-			if(i>=1&&i<=4&&j>13&&j<35){// XOOO_ 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=4&&j>13&&j<35){// XOOO_ ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='O'&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j-12]==' '&&board[j-5]!=' '){
 						input=(j-12)%7+1;
@@ -677,7 +681,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX 正斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX ¥¿±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]=='O'&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j+12]==' '&&((j<21&&board[j+19]!=' ')||j>=21)){
 						input=(j+12)%7+1;
@@ -686,7 +690,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='O'&&board[j]==board[j+6]&&board[j]==board[j-12]){
 					if(board[j-6]==' '&&board[j+1]!=' '){
 						input=(j-6)%7+1;
@@ -695,7 +699,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='O'&&board[j]==board[j+6]&&board[j]==board[j-12]){
 					if(board[j+6]==' '&&board[j+13]!=' '){
 						input=(j-6)%7+1;
@@ -704,7 +708,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j>13){// _OOOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=2&&i<=5&&j>13){// _OOOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='O'&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j-16]==' '&&board[j-9]!=' '){
 						input=(j-16)%7+1;
@@ -713,7 +717,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ 負斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ ­t±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]=='O'&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j+16]==' '&&((j<21&&board[j+23]!=' ')||j>=21)){
 						input=(j+16)%7+1;
@@ -722,7 +726,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX 負斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='O'&&board[j]==board[j-8]&&board[j]==board[j+16]){
 					if(board[j+8]==' '&&board[j+15]!=' '){
 						input=(j+15)%7+1;
@@ -731,7 +735,7 @@ int robotInputChess(char *board){
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]=='O'&&board[j]==board[j+8]&&board[j]==board[j-16]){
 					if(board[j-8]==' '&&board[j-1]!=' '){
 						input=(j-8)%7+1;
@@ -743,7 +747,7 @@ int robotInputChess(char *board){
 		}
 	}
 	
-	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : 判斷是否為最底層 !!
+	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : §PÂ_¬O§_¬°³Ì©³¼h !!
 		for(j=i;j<=(i+35);j=j+7){
 			
 			if(i>=1&&i<=4){// XOOO_ 
@@ -783,7 +787,7 @@ int robotInputChess(char *board){
 				}
 			}
 			
-			//檢查玩家或電腦是否有機會三子連線 
+			//ÀË¬dª±®a©Î¹q¸£¬O§_¦³¾÷·|¤T¤l³s½u 
 			//checking horizontal is two or not
 			if(board[j]!=' '&&board[j]==board[j+1]&&board[j-1]==' '&&board[j+2]==' '&&((j<35&&board[j+6]!=' '&&board[j+9]!=' ')||(j>=35))){// _OO_
 				if(board[j+2]==' '&&((j<35&&board[j+9]!=' ')||j>=35)){// XOO_ 
@@ -812,21 +816,21 @@ int robotInputChess(char *board){
 	for(i=1;i<=5;i++){//checking tilted is two or not
 		for(j=i+7;j<=(i+28);j=j+7){
 			
-			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ 正斜率
-				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ 正斜率
+			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ ¥¿±×²v
+				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ ¥¿±×²v
 					input=(j-12)%7+1;
 					printf("D");//test
 					return input;
 				}
 				
-				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX 正斜率
+				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX ¥¿±×²v
 					input=(j+6)%7+1;
 					printf("E");//test
 					return input;
 				}
 			}
 			
-			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ 正斜率
+			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ ¥¿±×²v
 				if(board[j]==' '&&board[j+7]!=' '){
 					input=j%7+1;
 					printf("F");//test
@@ -834,21 +838,21 @@ int robotInputChess(char *board){
 				}
 			}
 			
-			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ 負斜率
-				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX 負斜率
+			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ ­t±×²v
+				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX ­t±×²v
 					input=(j-16)%7+1;
 					printf("G");//test
 					return input;
 				}
 				
-				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ 負斜率
+				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ ­t±×²v
 					input=(j+8)%7+1;
 					printf("H");//test
 					return input;
 				}
 			}
 			
-			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ 負斜率
+			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ ­t±×²v
 				if(board[j]==' '&&board[j+7]!=' '){
 					input=j%7+1;
 					printf("I");//test
@@ -858,49 +862,49 @@ int robotInputChess(char *board){
 		}
 	}
 	
-	if(board[3]==' '){//往中間下 
+	if(board[3]==' '){//©¹¤¤¶¡¤U 
 		input=4;
-		if(robotCheckWin(board,input)==0){//預判玩家下一步不會贏 
+		if(robotCheckWin(board,input)==0){//¹w§Pª±®a¤U¤@¨B¤£·|Ä¹ 
 			printf("J");//test
 			return input;
 		}
 		
 	}
-	else if(board[3]!=' '){//往右邊下
+	else if(board[3]!=' '){//©¹¥kÃä¤U
 		for(i=4;i!=7;i++){ 
 			if(board[i]==' '){
 				input=i+1;
-				if(robotCheckWin(board,input)==0){//預判玩家下一步不會贏 
+				if(robotCheckWin(board,input)==0){//¹w§Pª±®a¤U¤@¨B¤£·|Ä¹ 
 					printf("K");//test
 					return input;
 				}
 			}
 			
 			
-			else if(board[i]!=' '){//右邊不為空，往左兩行 
+			else if(board[i]!=' '){//¥kÃä¤£¬°ªÅ¡A©¹¥ª¨â¦æ 
 				j=i;
 				j=j-k;
 				if(board[j]==' '){
 					input=j+1;
-					if(robotCheckWin(board,input)==0){//預判玩家下一步不會贏 
+					if(robotCheckWin(board,input)==0){//¹w§Pª±®a¤U¤@¨B¤£·|Ä¹ 
 						printf("L");//test
 						return input;
 					}
 				}
 			}
-			k=k+2;//往左四行或六行 
+			k=k+2;//©¹¥ª¥|¦æ©Î¤»¦æ 
 		}	
 	}
 	
-	//萬一玩家贏定了 
+	//¸U¤@ª±®aÄ¹©w¤F 
 	printf("yogamama\n");//test
 	k=2;//initialize k=2
-	if(board[3]==' '){//往中間下 
+	if(board[3]==' '){//©¹¤¤¶¡¤U 
 		input=4;
 		printf("M");//test
 		return input;	
 	}
-	else if(board[3]!=' '){//往右邊下
+	else if(board[3]!=' '){//©¹¥kÃä¤U
 		for(i=4;i!=7;i++){ 
 			if(board[i]==' '){
 				input=i+1;
@@ -909,7 +913,7 @@ int robotInputChess(char *board){
 			}
 			
 			
-			else if(board[i]!=' '){//右邊不為空，往左兩行 
+			else if(board[i]!=' '){//¥kÃä¤£¬°ªÅ¡A©¹¥ª¨â¦æ 
 				j=i;
 				j=j-k;
 				if(board[j]==' '){
@@ -918,21 +922,21 @@ int robotInputChess(char *board){
 					return input;
 				}
 			}
-			k=k+2;//往左四行或六行 
+			k=k+2;//©¹¥ª¥|¦æ©Î¤»¦æ 
 		}	
 	}
 	
-	//棋盤滿了 
+	//´Ñ½Lº¡¤F 
 	else{
-		return -1;//傳回-1，position <0 執行平手的判定 
+		return -1;//¶Ç¦^-1¡Aposition <0 °õ¦æ¥­¤âªº§P©w 
 	}
 }
 
-int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類會不會贏
+int robotCheckWin(char *board,int input){//ÀË¬d¹q¸£¤U¤l«á¤U¤@¨B¤HÃþ·|¤£·|Ä¹
 	int i=0,j=0,k=1;
 	int bottom,humanWins=0;
 	
-	//假設電腦下子
+	//°²³]¹q¸£¤U¤l
 	for(bottom = input + 34; bottom >= input - 1; bottom -= 7){ //check whether the position in board is blank from bottom
 		if(board[bottom] == ' '){
 			board[bottom] = 'X'; //insert player sign to board						
@@ -940,14 +944,14 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 		}
 	}
 	
-	//開始進行檢查
+	//¶}©l¶i¦æÀË¬d
 	for(i=0;i<=6;i++){//checking vertical is three or not 
 		for(j=i+7;j<=(i+21);j=j+7){
 			if(board[j]!=' '&&board[j]==board[j+7]&&board[j+7]==board[j+14]&&board[j-7]==' '){
 				if(board[j]=='O'){//check if human will win or not
 					humanWins=1;
 					printf("1 ");//test
-					board[bottom] = ' '; //復原!!
+					board[bottom] = ' '; //´_­ì!!
 					return humanWins;
 				}
 			}
@@ -956,97 +960,97 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 	
 	for(i=1;i<=5;i++){//checking tilted is three or not
 		for(j=i+7;j<=(i+28);j=j+7){
-			if(i>=1&&i<=4&&j>13){// XOOO_ 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=4&&j>13){// XOOO_ ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j-12]==' '&&board[j-5]!=' '){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("2 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX 正斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=2&&i<=5&&j<28&&j>=7){// _OOOX ¥¿±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]!=' '&&board[j]==board[j-6]&&board[j]==board[j+6]){
 					if(board[j+12]==' '&&((j<21&&board[j+19]!=' ')||j>=21)){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("3 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j+6]&&board[j]==board[j-12]){
 					if(board[j-6]==' '&&board[j+1]!=' '){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("4 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX 正斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j<28&&j>=7){// XO_OOX ¥¿±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j+6]&&board[j]==board[j-12]){
 					if(board[j+6]==' '&&board[j+13]!=' '){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("5 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
 				}
 			}
-			if(i>=2&&i<=5&&j>13){// _OOOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=2&&i<=5&&j>13){// _OOOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j-16]==' '&&board[j-9]!=' '){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("6 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
 				}
 			}
-			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ 負斜率  j<28:下面兩列不檢查	j>=21 : 判斷是否為最底層 !!
+			if(i>=1&&i<=4&&j<28&&j>6){// XOOO_ ­t±×²v  j<28:¤U­±¨â¦C¤£ÀË¬d	j>=21 : §PÂ_¬O§_¬°³Ì©³¼h !!
 				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+8]){
 					if(board[j+16]==' '&&((j<21&&board[j+23]!=' ')||j>=21)){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("7 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX 負斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j>13&&j<35){// XOO_OX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j-8]&&board[j]==board[j+16]){
 					if(board[j+8]==' '&&board[j+15]!=' '){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("8 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
 				}
 			}
-			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX 負斜率  j>13:上面兩列不檢查 
+			if(i>=1&&i<=5&&j<28&&j>6){// XO_OOX ­t±×²v  j>13:¤W­±¨â¦C¤£ÀË¬d 
 				if(board[j]!=' '&&board[j]==board[j+8]&&board[j]==board[j-16]){
 					if(board[j-8]==' '&&board[j-1]!=' '){
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("9 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
@@ -1055,7 +1059,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 		}
 	}
 	
-	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : 判斷是否為最底層 !!
+	for(i=1;i<=5;i++){//checking horizontal is three or not,  j>=35 : §PÂ_¬O§_¬°³Ì©³¼h !!
 		for(j=i;j<=(i+35);j=j+7){
 			
 			if(i>=1&&i<=4){// XOOO_ 
@@ -1064,7 +1068,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("10 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
@@ -1076,7 +1080,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("11 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
@@ -1088,7 +1092,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("12 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
@@ -1100,7 +1104,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 						if(board[j]=='O'){//check if human will win or not
 							humanWins=1;
 							printf("13 ");//test
-							board[bottom] = ' '; //復原!!
+							board[bottom] = ' '; //´_­ì!!
 							return humanWins;
 						}
 					}
@@ -1113,7 +1117,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("14 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
@@ -1122,7 +1126,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("15 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
@@ -1133,7 +1137,7 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("16 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
@@ -1144,63 +1148,63 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 	for(i=1;i<=5;i++){//checking tilted is two or not
 		for(j=i+7;j<=(i+28);j=j+7){
 			
-			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ 正斜率
-				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ 正斜率
+			if(board[j]!=' '&&board[j]==board[j-6]&&board[j-12]==' '&&board[j+6]==' '){// _OO_ ¥¿±×²v
+				if(i>=1&&i<=4&&j>13&&board[j-12]==' '&&board[j-5]!=' '){// XOO_ ¥¿±×²v
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("17 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
 				
-				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX 正斜率
+				if(i>=2&&i<=5&&board[j+6]==' '&&((j<28&&board[j+16]!=' ')||j>=28)){// _OOX ¥¿±×²v
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("18 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
 			}
 			
-			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ 正斜率
+			if(board[j-6]!=' '&&board[j-6]==board[j+6]&&j>=14&&j<35&&board[j-12]==' '&&board[j+12]==' '){// _O_O_ ¥¿±×²v
 				if(board[j]==' '&&board[j+7]!=' '){
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("19 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
 			}
 			
-			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ 負斜率
-				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX 負斜率
+			if(board[j]!=' '&&board[j]==board[j-8]&&board[j-16]==' '&&board[j+8]==' '){// _OO_ ­t±×²v
+				if(j>13&&board[j-16]==' '&&board[j-9]!=' '){// _OOX ­t±×²v
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("20 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
 				
-				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ 負斜率
+				if(j<35&&board[j+8]==' '&&((j<28&&board[j+15]!=' ')||j>=28)){// XOO_ ­t±×²v
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("21 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
 			}
 			
-			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ 負斜率
+			if(board[j-8]!=' '&&board[j-8]==board[j+8]&&j>=14&&j<35&&board[j+16]==' '&&board[j-16]==' '){// _O_O_ ­t±×²v
 				if(board[j]==' '&&board[j+7]!=' '){
 					if(board[j]=='O'){//check if human will win or not
 						humanWins=1;
 						printf("22 ");//test
-						board[bottom] = ' '; //復原!!
+						board[bottom] = ' '; //´_­ì!!
 						return humanWins;
 					}
 				}
@@ -1208,8 +1212,8 @@ int robotCheckWin(char *board,int input){//檢查電腦下子後下一步人類�
 		}
 	}
 	
-	//若人類不會贏，則傳回 0
-	board[bottom] = ' '; //復原!!
+	//­Y¤HÃþ¤£·|Ä¹¡A«h¶Ç¦^ 0
+	board[bottom] = ' '; //´_­ì!!
 	if(humanWins==0){//if human won't win
 		printf("0\n");//test
 		return humanWins;
